@@ -78,17 +78,180 @@
 
         .question-container {
             padding: 30px;
+            min-height: 500px !important;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .question {
-            display: none;
-            animation: fadeIn 0.5s ease-in;
-            width: 100%;
-            min-height: 300px;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            min-height: 300px !important;
+            position: relative !important;
         }
 
-        .question.active {
+        .question-header {
+            margin-bottom: 25px;
             display: block;
+            visibility: visible;
+        }
+
+        .week-info {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin: 15px 0;
+            color: #333;
+            display: block;
+            visibility: visible;
+        }
+
+        .options {
+            margin: 25px 0;
+            display: block;
+            visibility: visible;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            visibility: visible;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196F3;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #2196F3;
+            color: white;
+            border-color: #1976D2;
+        }
+
+        .option.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 25px;
+            display: inline-block;
+        }
+
+        .option-text {
+            flex: 1;
+            display: inline-block;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            display: block;
+            visibility: visible;
+        }
+
+        .loading-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .loading-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px auto;
+            width: 200px;
+        }
+
+        .loading-progress {
+            background: #2196F3;
+            height: 100%;
+            width: 60%;
+            animation: loading 2s infinite;
+        }
+
+        .manual-load-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .manual-start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .error-message {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #f44336;
+        }
+
+        .error-description {
+            margin: 15px 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .help-text {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
         }
 
         @keyframes fadeIn {
@@ -355,127 +518,107 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 5px;
             }
             
             .container {
                 margin: 0;
-                border-radius: 15px;
+                border-radius: 10px;
                 width: 100%;
                 max-width: 100%;
             }
             
             .header {
-                padding: 20px 15px;
+                padding: 15px 10px;
             }
             
             .header h1 {
-                font-size: 1.6em;
+                font-size: 1.4em;
                 line-height: 1.2;
             }
             
             .header p {
-                font-size: 1em;
+                font-size: 0.9em;
+                line-height: 1.3;
             }
             
             .question-container {
-                padding: 15px;
-                min-height: auto;
+                padding: 10px;
+                min-height: auto !important;
             }
             
             .question-text {
-                font-size: 1.1em;
-                line-height: 1.5;
+                font-size: 0.95em;
+                line-height: 1.4;
+                margin: 10px 0;
             }
             
             .exam-controls {
                 flex-direction: column;
                 align-items: stretch;
-                padding: 15px;
-                gap: 10px;
+                padding: 10px;
+                gap: 8px;
             }
             
             .progress-info {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
                 align-items: stretch;
             }
             
             .progress-bar {
                 width: 100%;
-                height: 10px;
+                height: 8px;
             }
             
             .option {
-                padding: 12px 15px;
-                margin: 8px 0;
-                flex-direction: column;
-                align-items: flex-start;
+                padding: 10px 12px;
+                margin: 6px 0;
                 gap: 8px;
-                text-align: left;
+            }
+            
+            .option-text {
+                font-size: 0.9em;
+                line-height: 1.3;
             }
             
             .option-letter {
-                align-self: flex-start;
+                font-size: 1em;
+                min-width: 20px;
             }
             
             .navigation {
-                padding: 15px;
+                padding: 10px;
                 flex-direction: column;
-                gap: 10px;
-            }
-            
-            .navigation > div {
-                order: -1;
+                gap: 8px;
             }
             
             .btn {
                 width: 100%;
                 justify-content: center;
-                padding: 15px 20px;
-                font-size: 1.1em;
-            }
-            
-            .diagram {
-                padding: 15px;
-                font-size: 0.9em;
-                overflow-x: scroll;
-                white-space: nowrap;
-            }
-            
-            .spiral-diagram, .structure-chart, .bathtub-curve {
-                font-size: 0.8em;
-                line-height: 1.4;
-            }
-            
-            .week-info {
-                font-size: 0.8em;
-                padding: 4px 10px;
-            }
-            
-            .question-number {
+                padding: 12px 15px;
                 font-size: 1em;
             }
             
-            .stats {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .score-circle {
-                width: 120px;
-                height: 120px;
-                font-size: 2em;
-            }
-            
-            .review-item {
-                padding: 15px;
+            .diagram {
+                padding: 10px;
+                font-size: 0.7em;
                 margin: 10px 0;
             }
             
-            .review-explanation {
-                padding: 12px;
+            .week-info {
+                font-size: 0.75em;
+                padding: 3px 8px;
+            }
+            
+            .question-number {
                 font-size: 0.9em;
+            }
+            
+            .review-explanation {
+                padding: 10px;
+                font-size: 0.85em;
+                margin-top: 10px;
             }
         }
         
@@ -505,6 +648,40 @@
                 font-size: 0.7em;
             }
         }
+
+        /* Inline styles converted to classes */
+        .browser-info {
+            font-size: 0.8em;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .hidden-btn {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .hidden-element {
+            display: none;
+        }
+
+        .diagram-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .diagram-subtitle {
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .result-actions {
+            margin-top: 30px;
+        }
+
+        .restart-btn {
+            margin-left: 15px;
+        }
     </style>
 </head>
 <body>
@@ -512,6 +689,8 @@
         <div class="header">
             <h1>TYZM-614</h1>
             <p>Yazılım Kalite Güvencesi ve Standartlar - Kapsamlı Sınav</p>
+            <!-- WhatsApp Browser Detection -->
+            <div id="browser-info" class="browser-info"></div>
         </div>
 
         <div class="exam-controls">
@@ -522,26 +701,38 @@
                 </div>
             </div>
             <div>
-                <button type="button" class="btn btn-secondary" onclick="toggleAnswerMode()" id="answer-mode-btn">
+                <button  type="button" class="btn btn-secondary" id="answer-mode-btn">
                     Cevapları Göster
+                </button>
+                <button type="button" class="btn btn-primary hidden-btn" id="debug-btn">
+                    Yeniden Yükle
                 </button>
             </div>
         </div>
 
         <div class="question-container" id="question-container">
-            <!-- Sorular buraya dinamik olarak yüklenecek -->
+            <!-- Loading placeholder for WhatsApp -->
+            <div id="loading-placeholder" class="loading-container">
+                <div class="loading-title">Sorular yükleniyor...</div>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <button type="button" id="force-load-btn" class="manual-load-btn">
+                    Soruları Yükle
+                </button>
+            </div>
         </div>
 
         <div class="navigation">
-            <button type="button" class="btn btn-secondary" onclick="previousQuestion()" id="prev-btn" disabled>
+            <button type="button" class="btn btn-secondary" id="prev-btn" disabled>
                 ← Önceki
             </button>
             <div>
-                <button type="button" class="btn btn-primary" onclick="showResults()" id="finish-btn" style="display: none;">
+                <button type="button" class="btn btn-primary hidden-btn" id="finish-btn">
                     Sınavı Bitir
                 </button>
             </div>
-            <button type="button" class="btn btn-primary" onclick="nextQuestion()" id="next-btn">
+            <button type="button" class="btn btn-primary" id="next-btn">
                 Sonraki →
             </button>
         </div>
@@ -635,7 +826,7 @@
                     "sadece I"
                 ],
                 correct: 2,
-                explanation: "I. ifade doğrudur (kusur çalışınca arıza olur). IV. ifade arızanın tanımıdır ve doğrudur. II yanlıştır (debug, hata ayıklama demektir). III yanlıştır (arızalar sadece sözdizimi hatalarından kaynaklanmaz)."
+                explanation: "I. ifade doğrudur (kusur çalışınca arıza olur). IV. ifade arızanın tanımıdır ve doğrudur. II yanlıştır (debug, hata ayıklama demektir). III yanlıştır (arızalar sadece sözdizimi hatalardan kaynaklanmaz)."
             },
             {
                 id: 7,
@@ -657,13 +848,13 @@
                 text: "Aşağıdaki diyagram, merkezden başlayıp dışarıya doğru genişleyen ve her turda aynı dört ana adımdan geçen döngüsel bir süreci göstermektedir. Bu diyagram hangi modeli ifade etmektedir?",
                 isVisual: true,
                 diagram: `<div class="spiral-diagram">
-                    <div style="font-weight: bold; margin-bottom: 15px;">DÖNGÜSEL MODEL DİYAGRAMI</div>
+                    <div class="diagram-title">DÖNGÜSEL MODEL DİYAGRAMI</div>
                     <div>[ Hedef Belirleme ]</div>
                     <div>↗ ↑ ↖</div>
                     <div>[Risk Analizi] ← MERKEZ → [Prototipleme]</div>
                     <div>↘ ↓ ↙</div>
                     <div>[ Geliştirme ve Test ] → [ Sonraki Faz Planlaması ]</div>
-                    <div style="margin-top: 10px; font-style: italic;">Her döngü dışarıya doğru genişler</div>
+                    <div class="diagram-subtitle">Her döngü dışarıya doğru genişler</div>
                 </div>`,
                 options: [
                     "Çağlayan Model",
@@ -709,7 +900,7 @@
                 text: "Aşağıdaki diyagram, bir sistemin hiyerarşik olarak daha küçük modüllere ayrıldığını göstermektedir. Bu yapı, programın fonksiyonel ayrışımını göstermektedir. Bu diyagram hangi türe bir örnektir?",
                 isVisual: true,
                 diagram: `<div class="structure-chart">
-                    <div style="font-weight: bold; margin-bottom: 15px;">HİYERARŞİK MODÜL YAPISI</div>
+                    <div class="diagram-title">HİYERARŞİK MODÜL YAPISI</div>
                     <div>┌─────────────────┐</div>
                     <div>│   Ana Modül     │</div>
                     <div>└─────────────────┘</div>
@@ -737,7 +928,7 @@
                 text: "Aşağıdaki grafik, bir ürünün yaşam döngüsü boyunca \"Başarısızlık Oranının\" zamana göre değişimini göstermektedir. Eğri önce yüksekten hızla düşer, sonra bir süre yatay ve düşük seyreder, son olarak tekrar yükselişe geçer. Bu \"küvet\" şeklindeki eğri neyi anlatmaktadır?",
                 isVisual: true,
                 diagram: `<div class="bathtub-curve">
-                    <div style="font-weight: bold; margin-bottom: 15px;">KÜVET EĞRİSİ (BATHTUB CURVE)</div>
+                    <div class="diagram-title">KÜVET EĞRİSİ (BATHTUB CURVE)</div>
                     <div>Başarısızlık ↑</div>
                     <div>Oranı        │ ╲</div>
                     <div>             │  ╲</div>
@@ -1176,77 +1367,247 @@
         let showAnswers = false;
         let examFinished = false;
 
-        function initializeExam() {
+        // Force load questions function
+        window.forceLoadQuestions = function() {
+            console.log('Force loading questions...');
+            const loadingPlaceholder = document.getElementById('loading-placeholder');
+            if (loadingPlaceholder) {
+                loadingPlaceholder.style.display = 'none';
+            }
+            
+            currentQuestion = 0;
             userAnswers = new Array(questions.length).fill(null);
             loadQuestion();
             updateProgress();
+        };
+
+        function initializeExam() {
+            // WhatsApp browser compatibility
+            console.log('Initializing exam...');
+            
+            userAnswers = new Array(questions.length).fill(null);
+            
+            // Hide loading placeholder
+            const loadingPlaceholder = document.getElementById('loading-placeholder');
+            if (loadingPlaceholder) {
+                loadingPlaceholder.style.display = 'none';
+            }
+            
+            // Force container visibility
+            const container = document.getElementById('question-container');
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            }
+            
+            // Load first question
+            setTimeout(() => {
+                loadQuestion();
+                updateProgress();
+            }, 100);
+        }
+
+        // Event Listeners Setup (WhatsApp Safe)
+        function setupEventListeners() {
+            // Answer mode toggle
+            const answerModeBtn = document.getElementById('answer-mode-btn');
+            if (answerModeBtn) {
+                answerModeBtn.addEventListener('click', toggleAnswerMode);
+            }
+
+            // Debug button
+            const debugBtn = document.getElementById('debug-btn');
+            if (debugBtn) {
+                debugBtn.addEventListener('click', function() {
+                    console.log('Manual initialization triggered');
+                    initializeExam();
+                });
+            }
+
+            // Force load button
+            const forceLoadBtn = document.getElementById('force-load-btn');
+            if (forceLoadBtn) {
+                forceLoadBtn.addEventListener('click', forceLoadQuestions);
+            }
+
+            // Navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', previousQuestion);
+            }
+
+            const nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', nextQuestion);
+            }
+
+            const finishBtn = document.getElementById('finish-btn');
+            if (finishBtn) {
+                finishBtn.addEventListener('click', showResults);
+            }
+        }
+
+        function selectOption(optionIndex) {
+            if (!showAnswers) {
+                userAnswers[currentQuestion] = optionIndex;
+                
+                // Re-render to update styling and show explanation if correct
+                renderQuestion();
+            }
+        }
+
+        // DOM API based question rendering (WhatsApp Web compatible)
+        function renderQuestion() {
+            const container = document.getElementById('question-container');
+            if (!container) {
+                console.error('Container not found');
+                return;
+            }
+
+            // Clear old content
+            container.textContent = '';
+            
+            const question = questions[currentQuestion];
+            const userAnswer = userAnswers[currentQuestion];
+            const isAnswered = userAnswer !== null;
+            const isCorrect = isAnswered && userAnswer === question.correct;
+            
+            // Create main question div
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            
+            // Create header
+            const header = document.createElement('div');
+            header.classList.add('question-header');
+            
+            const weekInfo = document.createElement('div');
+            weekInfo.classList.add('week-info');
+            weekInfo.textContent = question.week;
+            
+            const questionNumber = document.createElement('div');
+            questionNumber.classList.add('question-number');
+            questionNumber.textContent = `Soru ${currentQuestion + 1} / ${questions.length}`;
+            
+            header.appendChild(weekInfo);
+            header.appendChild(questionNumber);
+            
+            // Create question text
+            const questionText = document.createElement('div');
+            questionText.classList.add('question-text');
+            questionText.textContent = question.text;
+            
+            // Add visual diagram if exists
+            if (question.isVisual && question.diagram) {
+                const diagramDiv = document.createElement('div');
+                diagramDiv.classList.add('diagram');
+                diagramDiv.innerHTML = question.diagram; // Safe for diagram content
+                questionDiv.appendChild(diagramDiv);
+            }
+            
+            // Create options container
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+            
+            // Create each option
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.classList.add('option', `option-${index}`);
+                optionDiv.dataset.option = index;
+                
+                // Apply styling based on state
+                if (showAnswers) {
+                    if (index === question.correct) {
+                        optionDiv.classList.add('correct');
+                    } else if (userAnswer === index && index !== question.correct) {
+                        optionDiv.classList.add('incorrect');
+                    }
+                } else {
+                    // Normal mode - only show if this question is answered
+                    if (isAnswered) {
+                        if (index === question.correct) {
+                            optionDiv.classList.add('answered-correct');
+                        } else if (userAnswer === index && index !== question.correct) {
+                            optionDiv.classList.add('answered-incorrect');
+                        }
+                    } else if (userAnswer === index) {
+                        optionDiv.classList.add('selected');
+                    }
+                }
+                
+                // Create option letter
+                const optionLetter = document.createElement('span');
+                optionLetter.classList.add('option-letter');
+                optionLetter.textContent = `${String.fromCharCode(65 + index)})`;
+                
+                // Create option text
+                const optionText = document.createElement('span');
+                optionText.classList.add('option-text');
+                optionText.textContent = option;
+                
+                optionDiv.appendChild(optionLetter);
+                optionDiv.appendChild(optionText);
+                
+                // Add click event listener
+                optionDiv.addEventListener('click', () => selectOption(index));
+                
+                optionsDiv.appendChild(optionDiv);
+            });
+            
+            // Add explanation if in answer mode OR if this question was answered correctly
+            if (showAnswers || (isAnswered && isCorrect)) {
+                const explanationDiv = document.createElement('div');
+                explanationDiv.classList.add('review-explanation');
+                
+                if (!showAnswers && isCorrect) {
+                    // Just answered correctly - show only explanation
+                    const explanationText = document.createElement('div');
+                    explanationText.innerHTML = `<strong>✅ Doğru!</strong><br>${question.explanation}`;
+                    explanationDiv.appendChild(explanationText);
+                } else {
+                    // Full answer mode
+                    const correctLetter = String.fromCharCode(65 + question.correct);
+                    const correctAnswerText = document.createElement('strong');
+                    correctAnswerText.textContent = `Doğru Cevap: ${correctLetter}) ${question.options[question.correct]}`;
+                    
+                    const explanationText = document.createElement('div');
+                    explanationText.innerHTML = `<strong>Açıklama:</strong> ${question.explanation}`;
+                    
+                    explanationDiv.appendChild(correctAnswerText);
+                    explanationDiv.appendChild(document.createElement('br'));
+                    explanationDiv.appendChild(explanationText);
+                }
+                
+                explanationDiv.classList.add('show');
+                questionDiv.appendChild(explanationDiv);
+            }
+            
+            // Assemble the question
+            questionDiv.appendChild(header);
+            questionDiv.appendChild(questionText);
+            questionDiv.appendChild(optionsDiv);
+            
+            // Add to container
+            container.appendChild(questionDiv);
+            
+            // Update navigation
+            updateNavigationButtons();
+            
+            // Scroll to top for mobile
+            if (window.scrollTo) {
+                window.scrollTo(0, 0);
+            }
+            
+            console.log('Question rendered successfully via DOM API');
         }
 
         function loadQuestion() {
-            const question = questions[currentQuestion];
-            const container = document.getElementById('question-container');
+            console.log('Loading question:', currentQuestion);
             
-            // Konteyner görünürlüğünü sağla
-            container.style.display = 'block';
-            container.style.minHeight = '400px';
-            
-            let diagramHtml = '';
-            if (question.isVisual && question.diagram) {
-                diagramHtml = `<div class="diagram">${question.diagram}</div>`;
-            }
-
-            const optionsHtml = question.options.map((option, index) => {
-                const letter = String.fromCharCode(65 + index);
-                let optionClass = 'option';
-                
-                if (showAnswers) {
-                    if (index === question.correct) {
-                        optionClass += ' correct';
-                    } else if (userAnswers[currentQuestion] === index && index !== question.correct) {
-                        optionClass += ' incorrect';
-                    }
-                } else if (userAnswers[currentQuestion] === index) {
-                    optionClass += ' selected';
-                }
-
-                return `
-                    <div class="${optionClass}" onclick="selectOption(${index})" style="display: flex; align-items: flex-start; gap: 10px; margin: 10px 0;">
-                        <span class="option-letter" style="min-width: 25px; font-weight: bold;">${letter})</span>
-                        <span style="flex: 1;">${option}</span>
-                    </div>
-                `;
-            }).join('');
-
-            let explanationHtml = '';
-            if (showAnswers) {
-                const correctLetter = String.fromCharCode(65 + question.correct);
-                explanationHtml = `
-                    <div class="review-explanation">
-                        <strong>Doğru Cevap: ${correctLetter}) ${question.options[question.correct]}</strong><br>
-                        <strong>Açıklama:</strong> ${question.explanation}
-                    </div>
-                `;
-            }
-
-            container.innerHTML = `
-                <div class="question active" style="display: block; width: 100%;">
-                    <div class="question-header">
-                        <div class="week-info">${question.week}</div>
-                        <div class="question-number">Soru ${currentQuestion + 1} / ${questions.length}</div>
-                    </div>
-                    <div class="question-text" style="margin: 15px 0; line-height: 1.6;">${question.text}</div>
-                    ${diagramHtml}
-                    <div class="options" style="margin: 20px 0;">
-                        ${optionsHtml}
-                    </div>
-                    ${explanationHtml}
-                </div>
-            `;
-
-            updateNavigationButtons();
-            
-            // Mobil cihazlarda scroll position'ı en üste al
-            window.scrollTo(0, 0);
+            // DOM rendering delay for mobile/WhatsApp
+            setTimeout(() => {
+                renderQuestion();
+            }, 50);
         }
 
         function selectOption(optionIndex) {
@@ -1396,11 +1757,11 @@
                     ${weekBreakdown}
                 </div>
 
-                <div style="margin-top: 30px;">
+                <div class="result-actions">
                     <button class="btn btn-primary" onclick="showDetailedReview()">
                         Detaylı İnceleme
                     </button>
-                    <button class="btn btn-secondary" onclick="restartExam()" style="margin-left: 15px;">
+                    <button class="btn btn-secondary restart-btn" onclick="restartExam()">
                         Sınavı Yeniden Başlat
                     </button>
                 </div>
@@ -1462,8 +1823,120 @@
             initializeExam();
         }
 
-        // Sayfa yüklendiğinde sınavı başlat
-        document.addEventListener('DOMContentLoaded', initializeExam);
+        // Initialize when DOM is ready - Enhanced for WhatsApp Web
+        function safeInitialize() {
+            console.log('Safe initialize starting...');
+            
+            // Setup all event listeners first
+            setupEventListeners();
+            
+            // Show browser info
+            const browserInfo = document.getElementById('browser-info');
+            if (browserInfo) {
+                const isWhatsApp = /WhatsApp/i.test(navigator.userAgent);
+                const isMobile = /Mobile|iPhone|Android/i.test(navigator.userAgent);
+                browserInfo.textContent = isWhatsApp ? 'WhatsApp Browser algılandı' : 
+                                         isMobile ? 'Mobil browser algılandı' : 'Desktop browser';
+            }
+            
+            // Force start for mobile/WhatsApp browsers with immediate execution
+            if (/WhatsApp|Mobile|iPhone|Android/i.test(navigator.userAgent)) {
+                console.log('Mobil/WhatsApp ortamı algılandı, sorular otomatik yüklenecek');
+                // Immediate execution for WhatsApp Web
+                setTimeout(() => {
+                    forceLoadQuestions();
+                }, 50); // Reduced delay for faster loading
+                return;
+            }
+            
+            // Multiple initialization attempts for other browsers
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            function tryInit() {
+                attempts++;
+                console.log('Init attempt:', attempts);
+                
+                const container = document.getElementById('question-container');
+                const loadingPlaceholder = document.getElementById('loading-placeholder');
+                
+                if (container && questions && questions.length > 0) {
+                    console.log('Container and questions found, initializing...');
+                    
+                    // Hide loading using DOM API
+                    if (loadingPlaceholder) {
+                        loadingPlaceholder.style.display = 'none';
+                    }
+                    
+                    initializeExam();
+                } else if (attempts < maxAttempts) {
+                    console.log('Retrying in 300ms...');
+                    setTimeout(tryInit, 300); // Faster retry for better UX
+                } else {
+                    console.log('Max attempts reached, showing manual load option');
+                    // Create manual load interface using DOM API
+                    if (loadingPlaceholder) {
+                        loadingPlaceholder.textContent = '';
+                        
+                        const errorContainer = document.createElement('div');
+                        errorContainer.classList.add('loading-container');
+                        
+                        const errorTitle = document.createElement('div');
+                        errorTitle.classList.add('error-message');
+                        errorTitle.textContent = '🔄 Otomatik yükleme başarısız';
+                        
+                        const errorDesc = document.createElement('p');
+                        errorDesc.classList.add('error-description');
+                        errorDesc.textContent = 'Tarayıcınızda sorun yaşanıyor. Manuel olarak başlatabilirsiniz:';
+                        
+                        const manualBtn = document.createElement('button');
+                        manualBtn.id = 'manual-start-btn';
+                        manualBtn.classList.add('manual-start-btn');
+                        manualBtn.textContent = '📚 Sınavı Başlat';
+                        
+                        const helpText = document.createElement('div');
+                        helpText.classList.add('help-text');
+                        helpText.textContent = 'Veya sayfayı yenileyin';
+                        
+                        errorContainer.appendChild(errorTitle);
+                        errorContainer.appendChild(errorDesc);
+                        errorContainer.appendChild(manualBtn);
+                        errorContainer.appendChild(helpText);
+                        
+                        loadingPlaceholder.appendChild(errorContainer);
+                        
+                        // Add event listener to the new button
+                        manualBtn.addEventListener('click', forceLoadQuestions);
+                    }
+                }
+            }
+            
+            // Start immediately for faster loading
+            tryInit();
+        }
+
+        // Enhanced page load event handlers for better compatibility
+        document.addEventListener('readystatechange', () => {
+            console.log('Ready state changed:', document.readyState);
+            if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                safeInitialize();
+            }
+        });
+
+        // Immediate execution for already loaded pages
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', safeInitialize);
+        } else {
+            // Page already loaded, initialize immediately
+            console.log('Page already loaded, initializing immediately');
+            safeInitialize();
+        }
+
+        // Backup initialization with window load (especially for Safari mobile)
+        window.addEventListener('load', function() {
+            console.log('Window load event triggered');
+            setTimeout(safeInitialize, 100); // Quick backup check
+        });
     </script>
 </body>
 </html>
