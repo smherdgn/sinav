@@ -2,1374 +2,2088 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yazılım Kalite Güvencesi - İnteraktif Soru Listesi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TYZM-614: Yazılım Kalite Güvencesi ve Standartlar - Sınav</title>
     <style>
-        :root {
-            --primary-color: #3498db;
-            --primary-dark: #2980b9;
-            --secondary-color: #667eea;
-            --secondary-dark: #764ba2;
-            --correct-color: #27ae60;
-            --incorrect-color: #dc3545;
-            --text-dark: #2c3e50;
-            --text-light: #7f8c8d;
-            --bg-light: #f8f9fa;
-            --white: #ffffff;
-            --border-radius: 15px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 20px 10px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        header {
+        .header {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 30px;
             text-align: center;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: padding-bottom 0.4s ease-in-out;
         }
-        
-        .header-main {
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .exam-controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            text-align: left;
-        }
-
-        #header-toggle-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-        #header-toggle-btn:hover {
-            background-color: rgba(0,0,0,0.05);
-        }
-        #header-toggle-btn svg {
-            width: 24px;
-            height: 24px;
-            color: var(--text-light);
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        
-        .header-collapsible {
-            overflow: hidden;
-            max-height: 200px; /* A large enough value to not clip content */
-            transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
-                        opacity 0.3s ease-in-out,
-                        margin-top 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            opacity: 1;
-            margin-top: 10px; /* Original spacing */
-            text-align: center;
-        }
-
-        /* Collapsed state */
-        header.collapsed .header-collapsible {
-            max-height: 0;
-            opacity: 0;
-            margin-top: 0;
-        }
-        header.collapsed {
-            padding-bottom: 20px; /* Keep consistent padding */
-        }
-        header.collapsed #header-toggle-btn svg {
-            transform: rotate(180deg);
-        }
-        
-        .header-main h1 {
-            margin-bottom: 0;
-        }
-
-        h1 {
-            color: var(--text-dark);
-            margin-bottom: 10px;
-            font-size: clamp(1.8em, 5vw, 2.2em);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .subtitle {
-            color: var(--text-light);
-            font-size: 1.1em;
-        }
-
-        .mode-switcher {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #e9ecef;
-            border-radius: 30px;
-            padding: 5px;
-            margin: 0 auto 20px;
-            gap: 8px;
-            max-width: max-content;
-        }
-
-        .mode-btn {
-            flex: 0 0 44px;
-            width: 44px;
-            height: 44px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            background-color: transparent;
-            color: var(--text-light);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mode-btn svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--text-light);
-            transition: stroke 0.3s ease;
-        }
-        
-        .mode-btn.active {
-            background-color: var(--primary-color);
-            box-shadow: 0 3px 12px rgba(52, 152, 219, 0.4);
-            transform: scale(1.05);
-        }
-        
-        .mode-btn.active svg {
-            stroke: var(--white);
-        }
-
-        .mode-btn:not(.active):hover {
-            background-color: #dee2e6;
-        }
-        
-        main > .mode-switcher {
-             margin-bottom: 20px;
-        }
-
-        .quiz-stats {
-            display: flex;
-            justify-content: space-around;
             flex-wrap: wrap;
             gap: 15px;
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
         }
 
-        .stat { text-align: center; }
-        .stat-number { font-size: 2em; font-weight: bold; color: var(--primary-color); }
-        .stat-label { color: var(--text-light); font-size: 0.9em; }
-
-        /* View Containers */
-        body[data-view-mode="list"] #list-view { display: block; }
-        body[data-view-mode="list"] #single-view { display: none; }
-        body[data-view-mode="single"] #list-view,
-        body[data-view-mode="exam"] #list-view { display: none; }
-        body[data-view-mode="single"] #single-view,
-        body[data-view-mode="exam"] #single-view { display: block; }
-        
-        #single-view {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 20px;
-        }
-
-        #single-question-container .question {
-            margin-bottom: 0;
-            border: none;
-        }
-
-        #single-view-nav {
+        .progress-info {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
-        }
-        
-        #single-view-nav button {
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            min-height: 44px; /* Touch target */
-        }
-        
-        #single-view-nav button:hover:not(:disabled) {
-            background: var(--primary-dark);
+            gap: 20px;
         }
 
-        #single-view-nav button:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        #question-progress {
-            font-weight: bold;
-            color: var(--text-dark);
-        }
-
-
-        .week-section {
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: var(--border-radius);
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
         }
 
-        .week-section:hover { transform: translateY(-5px); }
-        .week-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            padding: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transition: width 0.3s ease;
+            width: 0%;
         }
-        .week-header:hover { background: linear-gradient(135deg, var(--primary-dark), #1f5f85); }
-        .week-title { font-size: 1.4em; font-weight: bold; }
-        .week-subtitle { font-size: 0.9em; opacity: 0.9; }
-        .toggle-icon { font-size: 1.5em; transition: transform 0.3s ease; }
-        .week-content { display: none; padding: 20px; }
-        .week-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .question-container {
+            padding: 30px;
+            min-height: 500px !important;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .question {
-            background: var(--bg-light);
-            border-left: 4px solid var(--primary-color);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            min-height: 300px !important;
+            position: relative !important;
         }
-        .question:last-child { margin-bottom: 0; }
-        .question:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); transform: translateX(5px); }
 
-        .question-number { color: var(--primary-color); font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
-        .question-text { font-size: 1.1em; margin-bottom: 15px; color: var(--text-dark); font-weight: 500; }
-        .question-context {
+        .question-header {
+            margin-bottom: 25px;
+            display: block;
+            visibility: visible;
+        }
+
+        .week-info {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            line-height: 1.6;
             margin: 15px 0;
-            padding: 15px;
-            background: var(--white);
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            font-style: italic;
-            color: #555;
+            color: #333;
+            display: block;
+            visibility: visible;
         }
-        .question-image { text-align: center; margin: 15px auto; padding: 15px; background: var(--white); border-radius: 8px; max-width: 500px; }
-        .question-image svg { max-width: 100%; height: auto; border-radius: 8px; }
-        
-        .options { list-style: none; margin-bottom: 15px; }
+
+        .options {
+            margin: 25px 0;
+            display: block;
+            visibility: visible;
+        }
+
         .option {
-            background: var(--white);
-            margin: 8px 0;
-            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            visibility: visible;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196F3;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #2196F3;
+            color: white;
+            border-color: #1976D2;
+        }
+
+        .option.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 25px;
+            display: inline-block;
+        }
+
+        .option-text {
+            flex: 1;
+            display: inline-block;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            display: block;
+            visibility: visible;
+        }
+
+        .loading-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .loading-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px auto;
+            width: 200px;
+        }
+
+        .loading-progress {
+            background: #2196F3;
+            height: 100%;
+            width: 60%;
+            animation: loading 2s infinite;
+        }
+
+        .manual-load-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .manual-start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .error-message {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #f44336;
+        }
+
+        .error-description {
+            margin: 15px 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .help-text {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-header {
+            margin-bottom: 25px;
+        }
+
+        .question-number {
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .week-info {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .spiral-diagram {
+            text-align: center;
+            line-height: 2;
+        }
+
+        .structure-chart {
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .bathtub-curve {
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .options {
+            margin: 25px 0;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196F3;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #2196F3;
+            color: white;
+            border-color: #1976D2;
+        }
+
+        .option.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 25px;
+        }
+
+        .navigation {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            min-height: 48px;
+            gap: 8px;
         }
-        .option:not([disabled]):hover { background: #e8f4fd; border-color: var(--primary-color); transform: translateX(5px); }
 
-        .option.user-correct, .option.revealed-answer {
-            background: #d4edda !important; border-color: var(--correct-color) !important; font-weight: bold; color: #155724;
-        }
-        .option.user-correct::before, .option.revealed-answer::before {
-            content: "✓"; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; background-color: var(--correct-color); color: white; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; font-size: 14px; flex-shrink: 0;
-        }
-        .option.user-incorrect {
-            background: #f8d7da !important; border-color: var(--incorrect-color) !important; color: #721c24; text-decoration: line-through;
-        }
-        .option.user-incorrect::before {
-            content: "✗"; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; background-color: var(--incorrect-color); color: white; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; font-size: 14px; text-decoration: none; flex-shrink: 0;
-        }
-        .option[disabled] { cursor: not-allowed; opacity: 0.8; }
-        .option.user-incorrect[disabled] { opacity: 0.6; }
-        .option.user-correct[disabled], .option.revealed-answer[disabled] { opacity: 1; }
-
-        .option-letter { font-weight: bold; color: var(--primary-color); margin-right: 10px; min-width: 20px; }
-
-        .explanation { background: #e8f6ff; border-left: 4px solid var(--primary-color); padding: 15px; margin-top: 10px; border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-dark); display: none; }
-        .show-answer-btn { background: linear-gradient(135deg, var(--correct-color), #229954); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.9em; transition: all 0.3s ease; }
-        .show-answer-btn:hover { transform: translateY(-2px); }
-
-        /* Floating Action Button (FAB) Controls */
-        .controls { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
-        .fab-main {
-            background: var(--primary-color);
+        .btn-primary {
+            background: #2196F3;
             color: white;
-            width: 56px;
-            height: 56px;
-            font-size: 2em;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .fab-main span {
-            transition: transform 0.3s ease;
-        }
-        .controls.menu-open .fab-main span {
-            transform: rotate(45deg);
         }
 
-        .control-btn {
-            border: none;
-            width: 50px;
-            height: 50px;
+        .btn-primary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            margin: 0 auto 30px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
         }
-        .control-btn:hover { transform: scale(1.1); }
-        
-        .fab-menu {
-            position: absolute;
-            bottom: 65px; /* Position above main FAB */
-            right: 3px;
+
+        .score-excellent { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .score-good { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        .score-average { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .score-poor { background: linear-gradient(135deg, #f44336, #d32f2f); }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .week-breakdown {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .week-item {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform: translateY(10px);
-            opacity: 0;
-            pointer-events: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
 
-        .controls.menu-open .fab-menu {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
+        .answer-review {
+            display: none;
+            margin-top: 30px;
         }
 
-        .fab-action {
-            background-color: var(--bg-light);
-            color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            font-size: 1.5em;
+        .answer-review.show {
+            display: block;
+        }
+
+        .review-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #e9ecef;
+        }
+
+        .review-item.correct {
+            border-left-color: #4CAF50;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #f44336;
+        }
+
+        .review-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .review-answer {
+            margin: 5px 0;
+        }
+
+        .review-explanation {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.95em;
         }
 
         @media (max-width: 768px) {
-            header {
-                padding: 15px;
-                margin-bottom: 15px;
+            body {
+                padding: 5px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background-attachment: fixed;
             }
-            .quiz-stats {
-                flex-direction: row;
-                gap: 10px;
+            
+            .container {
+                margin: 0;
+                border-radius: 10px;
+                width: calc(100% - 10px);
+                max-width: 100%;
+                margin: 5px auto;
             }
-            .week-header { padding: 15px; }
-            .question { padding: 15px; }
-            .controls { bottom: 15px; right: 15px; }
-            #single-view { padding: 15px; }
+            
+            .header {
+                padding: 12px 8px;
+            }
+            
+            .header h1 {
+                font-size: 1.1em;
+                line-height: 1.2;
+                margin-bottom: 5px;
+                word-wrap: break-word;
+            }
+            
+            .header p {
+                font-size: 0.75em;
+                line-height: 1.2;
+                word-wrap: break-word;
+            }
+            
+            .question-container {
+                padding: 8px;
+                min-height: auto !important;
+            }
+            
+            .question-text {
+                font-size: 0.85em;
+                line-height: 1.3;
+                margin: 8px 0;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            .exam-controls {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px;
+                gap: 6px;
+            }
+            
+            .progress-info {
+                flex-direction: column;
+                gap: 6px;
+                align-items: stretch;
+                text-align: center;
+            }
+            
+            .progress-bar {
+                width: 100%;
+                height: 6px;
+            }
+            
+            .option {
+                padding: 8px 10px;
+                margin: 4px 0;
+                gap: 6px;
+                word-wrap: break-word;
+            }
+            
+            .option-text {
+                font-size: 0.8em;
+                line-height: 1.2;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            .option-letter {
+                font-size: 0.9em;
+                min-width: 18px;
+            }
+            
+            .navigation {
+                padding: 8px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 12px;
+                font-size: 0.9em;
+            }
+            
+            .results {
+                padding: 15px 8px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .week-info {
+                font-size: 0.7em;
+                padding: 3px 6px;
+            }
+            
+            .diagram {
+                font-size: 0.7em;
+                padding: 8px;
+                margin: 8px 0;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 2px;
+            }
+            
+            .container {
+                border-radius: 8px;
+                margin: 2px auto;
+                width: calc(100% - 4px);
+            }
+            
+            .header {
+                padding: 10px 6px;
+            }
+            
+            .header h1 {
+                font-size: 0.95em;
+                margin-bottom: 3px;
+                word-wrap: break-word;
+            }
+            
+            .header p {
+                font-size: 0.65em;
+                line-height: 1.1;
+                word-wrap: break-word;
+            }
+            
+            .question-container {
+                padding: 6px;
+            }
+            
+            .question-text {
+                font-size: 0.75em;
+                line-height: 1.2;
+                margin: 6px 0;
+            }
+            
+            .option {
+                padding: 6px 8px;
+                margin: 3px 0;
+                gap: 4px;
+            }
+            
+            .option-text {
+                font-size: 0.7em;
+                line-height: 1.1;
+            }
+            
+            .option-letter {
+                font-size: 0.8em;
+                min-width: 15px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            
+            .stat-card {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 8px 10px;
+                font-size: 0.8em;
+            }
+            
+            .exam-controls {
+                padding: 6px;
+                gap: 4px;
+            }
+            
+            .navigation {
+                padding: 6px;
+                gap: 6px;
+            }
+            
+            .week-info {
+                font-size: 0.6em;
+                padding: 2px 4px;
+            }
+            
+            .diagram {
+                font-size: 0.6em;
+                padding: 6px;
+                margin: 6px 0;
+            }
+            
+            .spiral-diagram, .structure-chart, .bathtub-curve {
+                font-size: 0.55em;
+                line-height: 1.1;
+            }
+        }
+            
+            .stat-card {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 8px 10px;
+                font-size: 0.8em;
+            }
+            
+            .exam-controls {
+                padding: 6px;
+                gap: 4px;
+            }
+            
+            .navigation {
+                padding: 6px;
+                gap: 6px;
+            }
+            
+            .week-info {
+                font-size: 0.6em;
+                padding: 2px 4px;
+            }
+            
+            .diagram {
+                font-size: 0.6em;
+                padding: 6px;
+                margin: 6px 0;
+            }
+            
+            .spiral-diagram, .structure-chart, .bathtub-curve {
+                font-size: 0.55em;
+                line-height: 1.1;
+            }
+        }
+
+        /* Classes to replace inline styles */
+        .browser-info {
+            font-size: 0.8em;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .hidden-btn {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .hidden-element {
+            display: none;
+        }
+
+        .diagram-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .diagram-subtitle {
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .result-actions {
+            margin-top: 30px;
+        }
+
+        .restart-btn {
+            margin-left: 15px;
+        }
+
+        /* Enhanced correct/incorrect answer styling */
+        .option.correct {
+            background: #4CAF50 !important;
+            color: white !important;
+            border-color: #45a049 !important;
+        }
+
+        .option.incorrect {
+            background: #f44336 !important;
+            color: white !important;
+            border-color: #d32f2f !important;
+        }
+
+        .option.user-incorrect {
+            background: #f44336 !important;
+            color: white !important;
+            border-color: #d32f2f !important;
+        }
+
+        .option.user-correct {
+            background: #4CAF50 !important;
+            color: white !important;
+            border-color: #45a049 !important;
         }
     </style>
-<link rel="stylesheet" href="/index.css">
 </head>
-<body data-view-mode="list">
+<body>
     <div class="container">
-        <header>
-            <div class="header-main">
-                <h5>🎓 Yazılım Kalite Güvencesi</h1>
-                <button id="header-toggle-btn" class="header-toggle" aria-label="Başlığı daralt/genişlet" title="Başlığı daralt/genişlet">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                </button>
-            </div>
-            <div class="header-collapsible">
-                <p class="subtitle">İnteraktif Soru ve Cevap Listesi</p>
-                
-                <div class="quiz-stats">
-                    <div class="stat">
-                        <div id="total-questions" class="stat-number">36</div>
-                        <div class="stat-label">Toplam Soru</div>
-                    </div>
-                    <div class="stat">
-                        <div id="total-weeks" class="stat-number">12</div>
-                        <div class="stat-label">Hafta</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">5</div>
-                        <div class="stat-label">Seçenek</div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main>
-             <div class="mode-switcher">
-                <button class="mode-btn active" data-mode="list" title="Liste Modu" aria-label="Liste Modu">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                </button>
-                <button class="mode-btn" data-mode="single" title="Tek Tek Modu" aria-label="Tek Tek Modu">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                </button>
-                <button class="mode-btn" data-mode="exam" title="Sınav Modu" aria-label="Sınav Modu">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="m9 12 2 2 4-4"></path></svg>
-                </button>
-            </div>
-            <div id="list-view">
-                <!-- Hafta 1 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="1">
-                        <div>
-                            <div class="week-title">Hafta 1 - Yazılım Mühendisliği ve Temelleri</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-1">▼</span>
-                    </div>
-                    <div class="week-content" id="week-1">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Aşağıdakilerden hangisi yazılım güvenilirliğin temel kavramı değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Hata</li>
-                                <li class="option"><span class="option-letter">b)</span> Kusur</li>
-                                <li class="option"><span class="option-letter">c)</span> Arıza</li>
-                                <li class="option"><span class="option-letter">d)</span> Aksaklık</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Zamanda Gecikme</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Yazılım güvenilirliğinin temel kavramları hata, kusur/aksaklık ve arızalardır. Zamanda gecikme bu temel kavramlar arasında yer almaz.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Aşağıdakilerden hangisi sağlamlık veya sürdürülebilirlik gibi fonksiyonel ve işlevsel olmayan gereksinimlerin ele alınmasıyla ilgilenen süreçtir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Yazılım Kalite Güvencesi</li>
-                                <li class="option"><span class="option-letter">b)</span> Yazılım İşlevsel Kalitesi</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Yazılım Yapısal Kalitesi</li>
-                                <li class="option"><span class="option-letter">d)</span> Yazılım Kalite Kontrolü</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Yazılım Yapısal Kalitesi, sağlamlık veya sürdürülebilirlik gibi fonksiyonel gereksinimlerin sunulmasını ve yazılımın doğru şekilde üretilme derecesini destekleyen işlevsel olmayan gereksinimlerin ele alınmasıyla ilgilenir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdaki örnek cümlelerin hangisinde hata sonucu, çalıştırılan kusurdan kaynaklıdır?</div>
-                            <div class="question-context">
-                                <div><strong>I.</strong> Test aşamasında bir aksaklık vardı.</div>
-                                <div><strong>II.</strong> Bu tasarımcı hatasıdır.</div>
-                                <div><strong>III.</strong> Sistem bozuldu.</div>
-                                <div><strong>IV.</strong> Alt sistem denetiminde arıza olduğunu raporlamışlar.</div>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> I ve II</li>
-                                <li class="option"><span class="option-letter">b)</span> Yalnız I</li>
-                                <li class="option correct"><span class="option-letter">c)</span> III ve IV</li>
-                                <li class="option"><span class="option-letter">d)</span> Yalnız IV</li>
-                                <li class="option"><span class="option-letter">e)</span> Hepsi</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Bir kusurun çalıştırılması sonucu sistemde "arıza" (bozulma) meydana gelir. III. ve IV. maddeler arıza durumunu ifade etmektedir.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 2 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="2">
-                        <div>
-                            <div class="week-title">Hafta 2 - Yazılımda Yapılan Hata Türleri</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-2">▼</span>
-                    </div>
-                    <div class="week-content" id="week-2">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Bilgisayar operatörü olan Grace Hopper'in bulduğu ilk “hata” aşağıdakilerden hangisidir?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Bug</li>
-                                <li class="option"><span class="option-letter">b)</span> Failure</li>
-                                <li class="option"><span class="option-letter">c)</span> Kusur</li>
-                                <li class="option"><span class="option-letter">d)</span> Debug</li>
-                                <li class="option"><span class="option-letter">e)</span> Hata</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Grace Hopper'ın Mark II bilgisayarında bulduğu ilk "hata", bir röleye sıkışmış gerçek bir güveydi (moth). Bu olay, bilgisayar sorunları için "bug" (böcek) teriminin popülerleşmesine neden olmuştur.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Yanlış bir sonuç üreten bir insan eylemi aşağıdakilerden hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Bug</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Hata</li>
-                                <li class="option"><span class="option-letter">c)</span> Kusur</li>
-                                <li class="option"><span class="option-letter">d)</span> Debug</li>
-                                <li class="option"><span class="option-letter">e)</span> Arıza</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Standart tanımlara göre "Hata" (Error), yanlış bir sonuç üreten insan eylemidir. Bu hata, bir "Kusura" (Fault/Defect) yol açar, kusurun çalıştırılması ise "Arıza" (Failure) ile sonuçlanır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdaki ifadelere göre, hangisi doğrudur?</div>
-                            <div class="question-context">
-                                <div><strong>I.</strong> Kusurların çalıştırılması, sistemin arızalanmasına neden olabilir.</div>
-                                <div><strong>II.</strong> Hataları debug'lar oluşturur.</div>
-                                <div><strong>III.</strong> Arızalar sadece söz dizim hatalarından dolayı oluşur.</div>
-                                <div><strong>IV.</strong> Arıza, bir işlevin çalışma yeteneğinin yitirilmesidir.</div>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> I, II ve IV</li>
-                                <li class="option"><span class="option-letter">b)</span> II ve III</li>
-                                <li class="option correct"><span class="option-letter">c)</span> I ve IV</li>
-                                <li class="option"><span class="option-letter">d)</span> I ve II</li>
-                                <li class="option"><span class="option-letter">e)</span> Sadece I</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> I. Kusurun çalıştırılması arızaya neden olur (doğru). IV. Arıza, sistemin beklenen işlevi yerine getirememesidir (doğru). II yanlıştır, debug işlemi hataları düzeltir. III yanlıştır, arızalar mantıksal hatalardan da kaynaklanabilir.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        
-                <!-- Hafta 3 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="3">
-                        <div>
-                            <div class="week-title">Hafta 3 - Yazılım Hayat Döngüsü</div>
-                            <div class="week-subtitle">2 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-3">▼</span>
-                    </div>
-                    <div class="week-content" id="week-3">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Aşağıdaki modellerin hangisinde bir önceki aşamayı geçtikten sonra, daha sonraki aşamalarda sorunların olması durumunda geriye gitme şansımız olmuyor?</div>
-                            <div class="question-image">
-                                <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><title>Çağlayan (Waterfall) Modeli</title><style> .wf-box { fill: #e3f2fd; stroke: #3498db; stroke-width: 1.5; } .wf-text { font-family: sans-serif; font-size: 12px; fill: #2c3e50; text-anchor: middle; } .wf-arrow { fill: none; stroke: #2c3e50; stroke-width: 1.5; marker-end: url(#arrowhead); } </style><defs><marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2c3e50" /></marker></defs><g id="wf-gereksinimler"><rect x="20" y="20" width="120" height="40" rx="20" class="wf-box" /><text x="80" y="45" class="wf-text">Gereksinimler</text></g><g id="wf-analiz"><rect x="140" y="80" width="120" height="40" rx="20" class="wf-box" /><text x="200" y="105" class="wf-text">Analiz</text></g><g id="wf-tasarim"><rect x="20" y="140" width="120" height="40" rx="20" class="wf-box" /><text x="80" y="165" class="wf-text">Tasarım</text></g><g id="wf-kodlama"><rect x="140" y="200" width="120" height="40" rx="20" class="wf-box" /><text x="200" y="225" class="wf-text">Kodlama</text></g><g id="wf-test"><rect x="20" y="260" width="120" height="40" rx="20" class="wf-box" /><text x="80" y="285" class="wf-text">Test</text></g><path class="wf-arrow" d="M 140 40 C 180 40, 100 80, 140 80" /><path class="wf-arrow" d="M 140 160 C 180 160, 100 120, 140 120" /><path class="wf-arrow" d="M 140 220 C 180 220, 100 180, 140 180" /><path class="wf-arrow" d="M 140 280 C 180 280, 100 240, 140 240" /></svg>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> V Model</li>
-                                <li class="option"><span class="option-letter">b)</span> Tekrarlayan Model</li>
-                                <li class="option"><span class="option-letter">c)</span> Evrimsel Model</li>
-                                <li class="option"><span class="option-letter">d)</span> Agile</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Çağlayan Model</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Çağlayan (Waterfall) Modelinin dezavantajlarından biri, yaşam döngüsünün sonuna kadar çalışan bir yazılımın üretilmemesi ve değişen gereksinimlerin karşılanamamasıdır, bu da geriye dönmeyi zorlaştırır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Geliştirme ve test aşamalarını 'V' şeklinde birleştiren model hangisidir?</div>
-                             <div class="question-image">
-                                <svg viewBox="0 0 450 300" xmlns="http://www.w3.org/2000/svg"><title>V-Modeli</title><style> .v-box { fill: #e3f2fd; stroke: #3498db; stroke-width: 1.5; } .v-text { font-family: sans-serif; font-size: 11px; fill: #2c3e50; text-anchor: middle; } .v-line { fill: none; stroke: #3498db; stroke-width: 1.5; } .v-arrow { stroke: #2c3e50; stroke-width: 1.5; marker-end: url(#v-arrowhead); } </style><defs><marker id="v-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2c3e50" /></marker></defs><g id="v-sol"><g transform="translate(0, 20)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Gereksinimler</text></g><g transform="translate(40, 70)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Sistem Analizi</text></g><g transform="translate(80, 120)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Yazılım Tasarımı</text></g><g transform="translate(120, 170)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Modül Tasarımı</text></g></g><g id="v-sag"><g transform="translate(320, 20)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Kabul Testi</text></g><g transform="translate(280, 70)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Sistem Testi</text></g><g transform="translate(240, 120)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Entegrasyon Testi</text></g><g transform="translate(200, 170)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Birim Testi</text></g></g><g id="v-alt"><g transform="translate(160, 240)"><rect class="v-box" x="10" y="0" width="120" height="30" rx="15"/><text class="v-text" x="70" y="20">Kodlama</text></g></g><path class="v-line" d="M 135 35 H 315"/><path class="v-line" d="M 175 85 H 275"/><path class="v-line" d="M 215 135 H 235"/><path class="v-line" d="M 170 240 L 140 200"/><path class="v-line" d="M 280 240 L 310 200"/><polyline class="v-arrow" points="70,55 70,230 160,255" fill="none" /><polyline class="v-arrow" points="380,55 380,230 290,255" fill="none" /></svg>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Çağlayan Model</li>
-                                <li class="option"><span class="option-letter">b)</span> Tekrarlayan Model</li>
-                                <li class="option correct"><span class="option-letter">c)</span> V Model</li>
-                                <li class="option"><span class="option-letter">d)</span> Big Bang Model</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Şekil, geliştirme ve test aşamalarını V şeklinde birbirine bağlayan V Modelini temsil etmektedir. Her geliştirme aşamasının karşılığında bir test aşaması bulunur.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 4 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="4">
-                        <div>
-                            <div class="week-title">Hafta 4 - Yazılım Tasarımı ve Yazılması</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-4">▼</span>
-                    </div>
-                    <div class="week-content" id="week-4">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">"IF ... THEN ... ELSE ..." ve "DO ... WHILE ..." gibi ifadelerle programlama mantığını anlatan anlatım şeklinin ismi aşağıdakilerden hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Sözde Kod (Pseudo Code)</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Yapısal İngilizce</li>
-                                <li class="option"><span class="option-letter">c)</span> Kontrol Yapıları</li>
-                                <li class="option"><span class="option-letter">d)</span> Ruby programlama dili</li>
-                                <li class="option"><span class="option-letter">e)</span> BASIC dili</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> "IF-THEN-ELSE" ve "DO-WHILE" gibi anahtar kelimelerle, programlama mantığını doğal dile yakın bir şekilde ifade etme tekniğine Yapısal İngilizce denir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Semantik Versiyonlama nedir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Yazılımın birleştirilmesidir</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Bir sürüm numaralandırma sistemidir</li>
-                                <li class="option"><span class="option-letter">c)</span> Yazılımın müşteri için isimlendirilmesidir</li>
-                                <li class="option"><span class="option-letter">d)</span> Hepsi</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Semantik Versiyonlama (Semantic Versioning), MAJOR.MINOR.PATCH formatını kullanarak yazılım sürümlerindeki değişikliklerin anlamını ve kapsamını belirten bir numaralandırma standardıdır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Fonksiyonların hiyerarşik yapıda girdi, işlem ve çıktılarını gösteren diyagram türü hangisidir?</div>
-                            <div class="question-image">
-                                <svg viewBox="0 0 350 220" xmlns="http://www.w3.org/2000/svg"><title>HIPO Diyagramı</title><style>.hipo-box{fill:#e3f2fd;stroke:#3498db;stroke-width:1.5px;}.hipo-text{font-family:sans-serif;font-size:12px;text-anchor:middle;fill:#2c3e50;}.hipo-line{stroke:#2c3e50;stroke-width:1.5px;}</style><g id="hipo-root"><rect x="125" y="10" width="100" height="40" rx="5" class="hipo-box"/><text x="175" y="35" class="hipo-text">Çevrimiçi Satış</text></g><g id="hipo-l1-1"><rect x="10" y="80" width="100" height="40" rx="5" class="hipo-box"/><text x="60" y="105" class="hipo-text">Doğrulama</text></g><g id="hipo-l1-2"><rect x="125" y="80" width="100" height="40" rx="5" class="hipo-box"/><text x="175" y="97" class="hipo-text">Envanter</text><text x="175" y="112" class="hipo-text">Kontrolü</text></g><g id="hipo-l1-3"><rect x="240" y="80" width="100" height="40" rx="5" class="hipo-box"/><text x="290" y="105" class="hipo-text">Ödeme İşlemi</text></g><line class="hipo-line" x1="175" y1="50" x2="175" y2="80"/><line class="hipo-line" x1="60" y1="80" x2="290" y2="80"/><line class="hipo-line" x1="60" y1="80" x2="60" y2="70"/><line class="hipo-line" x1="290" y1="80" x2="290" y2="70"/><g id="hipo-l2-1"><rect x="10" y="170" width="100" height="40" rx="5" class="hipo-box"/><text x="60" y="195" class="hipo-text">Sorunlu Öğe</text></g><line class="hipo-line" x1="60" y1="120" x2="60" y2="170"/></svg>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Akış diyagramı</li>
-                                <li class="option"><span class="option-letter">b)</span> Yapısal Çizelgeler</li>
-                                <li class="option correct"><span class="option-letter">c)</span> HIPO Diyagramı</li>
-                                <li class="option"><span class="option-letter">d)</span> Veri Akış Diyagramı</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbirine</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Şekil, fonksiyonların hiyerarşik bir yapıda girdi, işlem ve çıktı (Hierarchy plus Input-Process-Output) olarak gösterildiği bir HIPO diyagramıdır.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 5 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="5">
-                        <div>
-                            <div class="week-title">Hafta 5 - Yazılım Güvenirliği ve Güvenliği</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-5">▼</span>
-                    </div>
-                    <div class="week-content" id="week-5">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Zamanla yapılan güncellemeler ve hata ayıklamaları ile bir yazılımın hata oranındaki değişimi gösteren eğri aşağıdakilerden hangisidir?</div>
-                            <div class="question-image">
-                                <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><title>Yazılım Güvenilirlik Eğrisi</title><style>.sr-line{fill:none;stroke:#2c3e50;stroke-width:2;}.sr-text{font-family:sans-serif;font-size:12px;fill:#2c3e50;}.sr-axis{stroke:#34495e;stroke-width:1;}.sr-spike{stroke:#e74c3c;stroke-width:1.5;}</style><path class="sr-axis" d="M 40 10 L 40 170 L 380 170"/><text x="5" y="95" class="sr-text">Hata Oranı</text><text x="180" y="190" class="sr-text">Zaman</text><path class="sr-line" d="M 50 40 C 80 140, 100 150, 140 150"/><path class="sr-line" d="M 160 110 C 180 145, 190 150, 220 150"/><path class="sr-line" d="M 235 125 C 250 148, 260 150, 290 150"/><path class="sr-line" d="M 290 150 L 370 150"/><line class="sr-spike" x1="140" y1="150" x2="160" y2="80"/><line class="sr-spike" x1="220" y1="150" x2="235" y2="100"/><text x="145" y="75" class="sr-text" font-size="10">güncelleme</text><text x="225" y="95" class="sr-text" font-size="10">güncelleme</text></svg>
-                            </div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Yazılım Güvenirliği eğrisidir</li>
-                                <li class="option"><span class="option-letter">b)</span> Test Süreci eğrisidir</li>
-                                <li class="option"><span class="option-letter">c)</span> Yazılım Hatalar çizelgesidir</li>
-                                <li class="option"><span class="option-letter">d)</span> Hatalar eğrisi</li>
-                                <li class="option"><span class="option-letter">e)</span> Donanım güncellemeler eğrisidir</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Bu eğri, zamanla yapılan güncellemeler ve hata düzeltmeleri (debug) ile yazılımın hata oranının nasıl değiştiğini gösterir ve "Yazılım Güvenirliği Eğrisi" olarak bilinir.
-                            </div>
-                        </div>
-                         <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Yazılım Güvenilirliği ne işe yarar?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Yazılımın belirtilen koşullarda, istenen işlevi hatasız yerine getirme yeteneğini ölçer ve ürün kalitesini artırmayı hedefler.</li>
-                                <li class="option"><span class="option-letter">b)</span> Yazılımın sadece kullanıcı arayüzü tasarımını yapan süreçtir.</li>
-                                <li class="option"><span class="option-letter">c)</span> Yazılımın nasıl yazılmaması gerektiğini anlatan belgeleri hazırlar.</li>
-                                <li class="option"><span class="option-letter">d)</span> Yazılımın sadece yetkisiz erişimlere karşı güvenli olmasını sağlar.</li>
-                                <li class="option"><span class="option-letter">e)</span> Yazılımın maliyetini hesaplar.</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Yazılım güvenilirliği, bir yazılımın belirtilen koşullar altında belirli bir süre boyunca hatasız çalışma olasılığıdır. Bu, doğrudan ürünün kalitesini ve geliştirme sürecinin başarısını etkiler.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">"Bir işlevsel birimin, belirli bir zaman aralığında ve verilen şartlar altında istenen işlevi yerine getirme yeteneği" tanımı aşağıdakilerden hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Yazılım Kalitesi</li>
-                                <li class="option"><span class="option-letter">b)</span> Yazılım Testi</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Yazılım Güvenilirliği</li>
-                                <li class="option"><span class="option-letter">d)</span> Yazılım Güvenliği</li>
-                                <li class="option"><span class="option-letter">e)</span> Yazılım Bakımı</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Bu, Türk Standartları Enstitüsü (TSE) tarafından yapılan ve uluslararası kabul görmüş güvenilirlik (reliability) tanımıdır.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        
-                <!-- Hafta 6 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="6">
-                        <div>
-                            <div class="week-title">Hafta 6 - Yazılım Test Stratejileri</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-6">▼</span>
-                    </div>
-                    <div class="week-content" id="week-6">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Yazılım geliştirme sürecinin erken aşamalarında başlayan ve birim, entegrasyon, sistem testlerini içeren test yaklaşımı hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Reaktif Test</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Proaktif Test</li>
-                                <li class="option"><span class="option-letter">c)</span> Güvenlik Testi</li>
-                                <li class="option"><span class="option-letter">d)</span> Beta Testi</li>
-                                <li class="option"><span class="option-letter">e)</span> Maymun Testi</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Proaktif Test Yaklaşımı, test sürecinin erken başlatıldığı; kusurları oluşmadan önlemeyi amaçlayan ve birim, modül, entegrasyon, sistem testlerini içeren bir tekniktir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Sistemin bölümlerine yetkisiz erişimleri ve yapılan sızma denemelerini tespit etmek amacıyla yapılan test türü aşağıdakilerden hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Sistem Testi</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Güvenlik Testi</li>
-                                <li class="option"><span class="option-letter">c)</span> Birim Testi</li>
-                                <li class="option"><span class="option-letter">d)</span> Stres Testi</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Sızma Testi (Penetration Test), bir Güvenlik Testi türüdür ve sistemin zafiyetlerini ve güvenli olmayan alanlarını yetkisiz erişim perspektifinden test etmek için kullanılır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Ayrı ayrı test edilmiş program modüllerinin, bir araya getirildiğinde sistemin bütünü içinde düzgün çalışıp çalışmadıklarını denetleyen test türü hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Birim Testi</li>
-                                <li class="option"><span class="option-letter">b)</span> Sistem Testi</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Entegrasyon Testi</li>
-                                <li class="option"><span class="option-letter">d)</span> Kabul Testi</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Entegrasyon Testi, bireysel olarak test edilmiş modüllerin veya bileşenlerin bir araya getirilerek birlikte ne kadar uyumlu çalıştığını doğrulamak için yapılır.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 7 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="7">
-                        <div>
-                            <div class="week-title">Hafta 7 - Yazılım Kalitesi</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-7">▼</span>
-                    </div>
-                    <div class="week-content" id="week-7">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Aşağıdakilerden hangisi ISO/IEC 9126 gibi standartlarda belirtilen temel yazılım kalitesi özelliklerinden biri değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Verimlilik</li>
-                                <li class="option"><span class="option-letter">b)</span> İşlevsellik</li>
-                                <li class="option"><span class="option-letter">c)</span> Güvenilirlik</li>
-                                <li class="option correct"><span class="option-letter">d)</span> Maliyet</li>
-                                <li class="option"><span class="option-letter">e)</span> Kullanılabilirlik</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Yazılım kalitesi modelleri, ürünün içsel ve dışsal özelliklerini tanımlar. İşlevsellik, Güvenilirlik, Kullanılabilirlik, Verimlilik, Sürdürülebilirlik ve Taşınabilirlik gibi özellikler ana kategorilerdir. Maliyet, bir proje kısıtıdır, doğrudan bir kalite özelliği değildir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Bir yazılımın, belirli bir süre veya belirli bir sayıda işlem için belirlenen koşullarda gerekli görevleri gerçekleştirme yeteneğini tanımlayan özellik hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> İşlevsellik</li>
-                                <li class="option"><span class="option-letter">b)</span> Verimlilik</li>
-                                <li class="option"><span class="option-letter">c)</span> Taşınabilirlik</li>
-                                <li class="option"><span class="option-letter">d)</span> Sürdürülebilirlik</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Güvenilirlik</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Bu tanım, bir yazılımın ne kadar güvenilir olduğunun, yani beklenen görevleri ne kadar süre hatasız yapabildiğinin tanımıdır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">McCabe karmaşıklık ölçütü (Siklomatik Karmaşıklık) ne işe yarar?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Programın kod satırlarının sayısını vermek için</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Program kodlarının mantıksal karmaşıklığını ve hataya ne kadar meyilli olduğunu göstermek için</li>
-                                <li class="option"><span class="option-letter">c)</span> Değişkenleri tanımlamak ve saymak için</li>
-                                <li class="option"><span class="option-letter">d)</span> Yazılım hatalarını artırmak için</li>
-                                <li class="option"><span class="option-letter">e)</span> Kullanıcı arayüzünün ne kadar karmaşık olduğunu ölçmek için</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> McCabe Siklomatik Karmaşıklık ölçütü, bir programdaki doğrusal bağımsız yolların sayısını ölçer. Yüksek karmaşıklık, daha fazla test gerektirdiğini ve kodun hataya daha meyilli olabileceğini gösterir.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 8 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="8">
-                        <div>
-                            <div class="week-title">Hafta 8 - Yazılım Kalite Güvencesi ve Sertifikalar</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-8">▼</span>
-                    </div>
-                    <div class="week-content" id="week-8">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Aşağıdakilerden hangisi ISO 9000-3 Sertifikasyon sürecinin bir aşaması değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Kendi kuruluşun SQA sistemini geliştirmek</li>
-                                <li class="option"><span class="option-letter">b)</span> Kendi kuruluşun SQA sistemini uygulamak</li>
-                                <li class="option"><span class="option-letter">c)</span> Sertifika denetimlerine uğramak</li>
-                                <li class="option correct"><span class="option-letter">d)</span> Sertifika denetimlerinden kaçınmak</li>
-                                <li class="option"><span class="option-letter">e)</span> Bir SQA sistemi kullanmak</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> ISO 9000-3 sertifikası alabilmek için bir kuruluşun SQA sistemini geliştirmesi, uygulaması ve ardından bu sistemin uygunluğunu doğrulamak için sertifika denetimlerinden geçmesi gerekir. Denetimlerden kaçınmak sürecin bir parçası olamaz.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">ISO 9000-3 sertifikasının alınabilmesi için gerekli aşamaların doğru sırası hangisidir?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> SQA sistemini geliştirmek → SQA sistemini uygulamak → Denetime hazır olmak</li>
-                                <li class="option"><span class="option-letter">b)</span> Denetime hazır olmak → SQA sistemini uygulamak → SQA sistemini geliştirmek</li>
-                                <li class="option"><span class="option-letter">c)</span> SQA sistemini uygulamak → Denetime hazır olmak → SQA sistemini geliştirmek</li>
-                                <li class="option"><span class="option-letter">d)</span> Sadece denetime hazır olmak yeterlidir.</li>
-                                <li class="option"><span class="option-letter">e)</span> Sadece SQA sistemi geliştirmek yeterlidir.</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Mantıksal ve standartlara uygun sıra; önce bir sistemin (politika ve prosedürlerin) geliştirilmesi, sonra bu sistemin organizasyon içinde uygulanması ve son olarak da bağımsız bir denetim için hazır hale gelinmesidir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdakilerden hangisi yazılım kalite güvencesi alanında standart geliştiren organizasyonlardan biri değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> IEEE</li>
-                                <li class="option correct"><span class="option-letter">b)</span> ISA</li>
-                                <li class="option"><span class="option-letter">c)</span> ISO</li>
-                                <li class="option"><span class="option-letter">d)</span> ANSI</li>
-                                <li class="option"><span class="option-letter">e)</span> EIA</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> IEEE, ISO, ANSI ve EIA yazılım mühendisliği ve kalitesi alanında standartlar yayınlayan önemli kuruluşlardır. ISA (International Society of Automation) ise daha çok otomasyon sistemleri üzerine odaklanmış bir organizasyondur.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 9 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="9">
-                        <div>
-                            <div class="week-title">Hafta 9 - CASE Araçları</div>
-                            <div class="week-subtitle">4 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-9">▼</span>
-                    </div>
-                    <div class="week-content" id="week-9">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">CASE kısaltmasının doğru açılımı aşağıdakilerden hangisidir?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Computer Aided Software Engineering</li>
-                                <li class="option"><span class="option-letter">b)</span> Computer And Software Engineering</li>
-                                <li class="option"><span class="option-letter">c)</span> Complex Analysis Software Examples</li>
-                                <li class="option"><span class="option-letter">d)</span> Continuous Automated System Execution</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> CASE, "Computer Aided Software Engineering" (Bilgisayar Destekli Yazılım Mühendisliği) kelimelerinin baş harflerinden oluşur ve yazılım geliştirme sürecini otomatize eden araçları ifade eder.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Yazılım bileşenleri, veri ve kontrol akışını grafiksel olarak temsil etmek için kullanılan CASE araç türü hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Belgelendirme Araçları</li>
-                                <li class="option"><span class="option-letter">b)</span> Süreç Modelleme Araçları</li>
-                                <li class="option"><span class="option-letter">c)</span> Proje Yönetim Araçları</li>
-                                <li class="option"><span class="option-letter">d)</span> Analiz Araçları</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Diyagram Araçları</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Sistem bileşenlerini, veri akışını (Data Flow Diagram) ve yapıları (HIPO) grafiksel olarak temsil etmek için kullanılan araçlar Diyagram Araçlarıdır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdakilerden hangisi CASE araçlarının "Prototip Hazırlama" türüne bir örnektir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Redmine</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Mockup hazırlama araçları</li>
-                                <li class="option"><span class="option-letter">c)</span> Matlab</li>
-                                <li class="option"><span class="option-letter">d)</span> IDE (Integrated Development Environment)</li>
-                                <li class="option"><span class="option-letter">e)</span> Blender</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Mockup ve prototip hazırlama araçları (örn: Mockup Builder, Figma, Balsamiq), yazılımın erken aşamalarında kullanıcı arayüzü ve işlevsellik taslakları oluşturmak için kullanılır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 4</div>
-                            <div class="question-text">Aşağıdakilerden hangisi bir CASE aracı olarak kabul edilmez?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Derleyiciler</li>
-                                <li class="option"><span class="option-letter">b)</span> Hata ayıklayıcılar (Debuggers)</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Wine</li>
-                                <li class="option"><span class="option-letter">d)</span> Belgelendirme Araçları (Documentation Tools)</li>
-                                <li class="option"><span class="option-letter">e)</span> Git (Versiyon Kontrol)</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Derleyiciler, hata ayıklayıcılar, belgelendirme araçları ve versiyon kontrol sistemleri yazılım mühendisliği sürecini destekleyen ve otomatize eden araçlar oldukları için CASE aracı olarak kabul edilirler. Wine ise Windows uygulamalarını Linux gibi ortamlarda çalıştırmak için bir uyumluluk katmanıdır ve doğrudan bir mühendislik aracı değildir.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 10 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="10">
-                        <div>
-                            <div class="week-title">Hafta 10 - Kalite Yönetim Bileşenleri</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-10">▼</span>
-                    </div>
-                    <div class="week-content" id="week-10">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Proje ilerleme kontrolünün ana bileşenleri aşağıdakilerden hangileridir?</div>
-                             <div class="question-context">
-                                <div><strong>I.</strong> Risk yönetimi faaliyetlerinin kontrolü</div>
-                                <div><strong>II.</strong> Proje çizelgesi kontrolü</div>
-                                <div><strong>III.</strong> Proje kaynak kontrolü</div>
-                                <div><strong>IV.</strong> Proje bütçe kontrolü</div>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> I, II ve IV</li>
-                                <li class="option"><span class="option-letter">b)</span> II ve III</li>
-                                <li class="option"><span class="option-letter">c)</span> I ve IV</li>
-                                <li class="option"><span class="option-letter">d)</span> Hiçbiri</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Hepsi</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Kapsamlı bir proje ilerleme kontrolü; risk, zaman çizelgesi (takvim), kaynaklar (insan, araç) ve bütçe gibi temel bileşenlerin tamamının yönetimini ve kontrolünü içerir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Bir projedeki görevleri analiz edip, özellikle etkinlik süresi değişkenliğini dikkate alarak planlama yapan proje yönetim tekniği hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> CPM (Critical Path Method)</li>
-                                <li class="option correct"><span class="option-letter">b)</span> PERT (Program Evaluation and Review Technique)</li>
-                                <li class="option"><span class="option-letter">c)</span> COTS (Commercial Off-the-Shelf)</li>
-                                <li class="option"><span class="option-letter">d)</span> SQA (Software Quality Assurance)</li>
-                                <li class="option"><span class="option-letter">e)</span> Hiçbiri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> PERT (Program Değerlendirme ve Gözden Geçirme Tekniği), özellikle etkinlik sürelerinin kesin olmadığı, değişkenlik gösterdiği (optimistik, pesimistik, olası tahminler) projelerde kullanılan bir planlama ve kontrol tekniğidir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdakilerden hangisi Yazılım Kalite Maliyeti konusunda ekonomik veriler temelinde yapılan yönetim faaliyetlerinden biridir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Hata önleme ve tespit maliyetlerini kontrol etmek.</li>
-                                <li class="option"><span class="option-letter">b)</span> SQA bütçesini, arızaların ekonomik zararlarına göre değerlendirmek.</li>
-                                <li class="option"><span class="option-letter">c)</span> SQA altyapısına yapılacak yatırımları ekonomik performansa göre değerlendirmek.</li>
-                                <li class="option correct"><span class="option-letter">d)</span> Hepsi</li>
-                                <li class="option"><span class="option-letter">e)</span> Sadece a ve b</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Yazılım Kalite Maliyeti yönetimi; hata önleme ve tespit maliyetlerini kontrol etmeyi, SQA bütçesini ekonomik zararlara göre ayarlamayı ve SQA altyapı yatırımlarını ekonomik performansa dayalı olarak değerlendirmeyi içerir. Dolayısıyla hepsi doğrudur.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 11 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="11">
-                        <div>
-                            <div class="week-title">Hafta 11 - Kalite Yönetim Standartları</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-11">▼</span>
-                    </div>
-                    <div class="week-content" id="week-11">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Diğerlerinden farklı olarak güvenilirlik odaklı olan ve yazılımın hata yoğunluğunu öngörmeye yönelik metrikler sunan kalite faktör modeli hangisidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> McCall Faktör Modeli</li>
-                                <li class="option"><span class="option-letter">b)</span> Evans ve Marciniak'ın faktör modeli</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Rome Laboratory (Rome Labs) Modeli</li>
-                                <li class="option"><span class="option-letter">d)</span> Deutsch ve Willis'in faktör modeli</li>
-                                <li class="option"><span class="option-letter">e)</span> Hepsi aynı yaklaşıma sahiptir</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> McCall, Evans & Marciniak, ve Deutsch & Willis modelleri yazılım kalitesini hiyerarşik faktörlere ayırarak tanımlarken, Rome Laboratory Modeli daha çok güvenilirlik odaklıdır ve hata yoğunluğu öngörümü gibi spesifik metrikler sunarak diğerlerinden ayrılır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Aşağıdakilerden hangisi McCall modelindeki "Ürün Geçiş" faktörlerinden biridir?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Taşınabilirlik</li>
-                                <li class="option"><span class="option-letter">b)</span> Esneklik</li>
-                                <li class="option"><span class="option-letter">c)</span> Bakım</li>
-                                <li class="option"><span class="option-letter">d)</span> Test edilebilirlik</li>
-                                <li class="option"><span class="option-letter">e)</span> Verimlilik</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> McCall modelinde kalite faktörleri 3'e ayrılır. "Ürün Geçiş" kategorisi; Taşınabilirlik (Portability), Yeniden Kullanılabilirlik (Reusability) ve Birlikte Çalışabilirlik (Interoperability) faktörlerini içerir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdakilerden hangisi McCall modelindeki "Ürün Revizyon" faktörlerinden biri değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Taşınabilirlik</li>
-                                <li class="option"><span class="option-letter">b)</span> Test edilebilirlik</li>
-                                <li class="option"><span class="option-letter">c)</span> Bakım</li>
-                                <li class="option"><span class="option-letter">d)</span> Esneklik</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Bütünlük</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> McCall modelinde "Ürün Revizyon" faktörleri Bakım (Maintainability), Esneklik (Flexibility) ve Test Edilebilirlik (Testability)'ten oluşur. "Bütünlük" (Integrity) ise "Ürün Çalışma" faktörleri kategorisinde yer alır. "Taşınabilirlik" ise "Ürün Geçiş" faktörlerindendir.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 12 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="12">
-                        <div>
-                            <div class="week-title">Hafta 12 - IEEE Yazılım Mühendisliği Standartları</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-12">▼</span>
-                    </div>
-                    <div class="week-content" id="week-12">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">IEEE standartlarının üç ana sınıfı arasında aşağıdakilerden hangisi yer almaz?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Kavramsal Standartlar</li>
-                                <li class="option"><span class="option-letter">b)</span> Uygunluk Standartları</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Prosedürel Standartlar</li>
-                                <li class="option"><span class="option-letter">d)</span> Rehberlik Standartları</li>
-                                <li class="option"><span class="option-letter">e)</span> Yukarıdakilerin hepsi bir IEEE sınıfıdır.</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> IEEE standartları slaytta belirtildiği üzere üç ana sınıfa ayrılır: Kavramsal (Conceptual), Uygunluk (Conformance) ve Rehberlik (Guidance). "Prosedürel Standartlar" bu sınıflandırmada ayrı bir ana kategori olarak belirtilmemiştir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">IEEE 12207 standardına göre yaşam döngüsü süreçleri sınıflandırıldığında aşağıdakilerden hangisi bu sınıflardan biri değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Birincil Süreçler (Primary Processes)</li>
-                                <li class="option"><span class="option-letter">b)</span> Destekleyici Süreçler (Supporting Processes)</li>
-                                <li class="option"><span class="option-letter">c)</span> Kurumsal Süreçler (Organizational Processes)</li>
-                                <li class="option correct"><span class="option-letter">d)</span> Merkezi Süreçler (Central Processes)</li>
-                                <li class="option"><span class="option-letter">e)</span> Hepsi IEEE 12207 süreç sınıfıdır.</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> IEEE 12207 standardı süreçleri üç ana sınıfa ayırır: Birincil (Primary), Destekleyici (Supporting) ve Kurumsal (Organizational). "Merkezi Süreçler" bu sınıflandırmada yer almaz.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdakilerden hangisi IEEE 1028 gözden geçirme standardının tanımladığı sistematik derleme türlerinden biri değildir?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Test Durumları (Test Cases)</li>
-                                <li class="option"><span class="option-letter">b)</span> Yönetim Yorumları (Management Reviews)</li>
-                                <li class="option"><span class="option-letter">c)</span> Teknik İncelemeler (Technical Reviews)</li>
-                                <li class="option"><span class="option-letter">d)</span> Üstünden Hızlı Geçme (Walkthroughs)</li>
-                                <li class="option"><span class="option-letter">e)</span> Denetimler (Audits)</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> IEEE 1028 standardı beş sistematik derleme (review/audit) türü tanımlar: Yönetim Yorumları, Teknik İncelemeler, Denetlemeler (Inspections), Üstünden Hızlı Geçme ve Denetimler. "Test Durumları" bir derleme türü değil, bir test artefaktıdır.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        
-                <!-- Hafta 13 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="13">
-                        <div>
-                            <div class="week-title">Hafta 13 - Lean ve Altı Sigma Yönetim Sistemleri</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-13">▼</span>
-                    </div>
-                    <div class="week-content" id="week-13">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Altı Sigma (Six Sigma) nedir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Bir yazılım hayat döngüsü modeli</li>
-                                <li class="option"><span class="option-letter">b)</span> Bir kalite standardıdır</li>
-                                <li class="option correct"><span class="option-letter">c)</span> Süreçlerdeki hataları ve değişkenliği azaltarak kaliteyi artırmayı hedefleyen bir yönetim metodolojisidir</li>
-                                <li class="option"><span class="option-letter">d)</span> Sadece bir kalite metrik türüdür</li>
-                                <li class="option"><span class="option-letter">e)</span> Bir test ürünüdür</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Altı Sigma, süreçlerin değişkenliğini ve kusurlarını azaltarak performansı artırmak için veri odaklı, müşteri odaklı bir yönetim yaklaşımıdır.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">DMAIC yaklaşımının süreç iyileştirme adımlarının hangisi iyileştirme faaliyetlerinin yönünü belirlemekten ve problemi tanımlamaktan sorumludur?</div>
-                            <div class="question-image">
-                                <svg viewBox="0 0 500 100" xmlns="http://www.w3.org/2000/svg"><title>DMAIC Süreci</title><style>.dmaic-box{fill:#e3f2fd;stroke:#3498db;stroke-width:1.5px;}.dmaic-text{font-family:sans-serif;font-size:12px;text-anchor:middle;fill:#2c3e50;}.dmaic-arrow{stroke:#2c3e50;stroke-width:1.5px;marker-end:url(#dmaic-arrowhead);}</style><defs><marker id="dmaic-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2c3e50"/></marker></defs><g id="d-box"><rect x="10" y="30" width="80" height="40" rx="5" class="dmaic-box"/><text x="50" y="55" class="dmaic-text">Define</text></g><g id="m-box"><rect x="110" y="30" width="80" height="40" rx="5" class="dmaic-box"/><text x="150" y="55" class="dmaic-text">Measure</text></g><g id="a-box"><rect x="210" y="30" width="80" height="40" rx="5" class="dmaic-box"/><text x="250" y="55" class="dmaic-text">Analyze</text></g><g id="i-box"><rect x="310" y="30" width="80" height="40" rx="5" class="dmaic-box"/><text x="350" y="55" class="dmaic-text">Improve</text></g><g id="c-box"><rect x="410" y="30" width="80" height="40" rx="5" class="dmaic-box"/><text x="450" y="55" class="dmaic-text">Control</text></g><line class="dmaic-arrow" x1="90" y1="50" x2="110" y2="50"/><line class="dmaic-arrow" x1="190" y1="50" x2="210" y2="50"/><line class="dmaic-arrow" x1="290" y1="50" x2="310" y2="50"/><line class="dmaic-arrow" x1="390" y1="50" x2="410" y2="50"/></svg>
-                            </div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Ölçüm (Measure)</li>
-                                <li class="option"><span class="option-letter">b)</span> İyileştirme (Improve)</li>
-                                <li class="option"><span class="option-letter">c)</span> Kontrol (Control)</li>
-                                <li class="option"><span class="option-letter">d)</span> Analiz (Analyze)</li>
-                                <li class="option correct"><span class="option-letter">e)</span> Tanımlama (Define)</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> DMAIC yaklaşımının ilk adımı olan "Define" (Tanımlama), projenin amacını, kapsamını ve hedeflerini belirleyerek iyileştirme faaliyetlerinin yönünü belirler.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Aşağıdakilerden hangisi Six Sigma'nın en önemli ve temel odak noktasıdır?</div>
-                            <ul class="options">
-                                <li class="option correct"><span class="option-letter">a)</span> Müşteri odaklılık</li>
-                                <li class="option"><span class="option-letter">b)</span> Kayıp odaklılık</li>
-                                <li class="option"><span class="option-letter">c)</span> Hızlı sonuç odaklılık</li>
-                                <li class="option"><span class="option-letter">d)</span> Sadece sürekli iyileştirmelere odaklanma</li>
-                                <li class="option"><span class="option-letter">e)</span> Sadece maliyet azaltmaya odaklanması</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Altı Sigma'nın en temel prensibi, süreçlerin müşteri beklentilerini karşılayacak şekilde iyileştirilmesidir. Bu nedenle "Müşteri odaklılık" en önemli noktasıdır.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hafta 14 -->
-                <div class="week-section">
-                    <div class="week-header" data-week="14">
-                        <div>
-                            <div class="week-title">Hafta 14 - İş Modeli ve Uygulama Seçimi</div>
-                            <div class="week-subtitle">3 Soru</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-14">▼</span>
-                    </div>
-                    <div class="week-content" id="week-14">
-                        <div class="question">
-                            <div class="question-number">Soru 1</div>
-                            <div class="question-text">Farklı iş modellerinde (örneğin tıbbi cihazlar ve yazıcılar) "kalite" anlayışının farklı olmasının temel nedeni nedir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Mühendislerin farklı olması</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Müşteri beklentilerinin ve önceliklerinin farklı olması</li>
-                                <li class="option"><span class="option-letter">c)</span> Kullanılan programlama dillerinin farklı olması</li>
-                                <li class="option"><span class="option-letter">d)</span> Tüm iş modellerinde kalite anlayışı aynıdır</li>
-                                <li class="option"><span class="option-letter">e)</span> Devlet düzenlemeleri</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Sunumdaki Hewlett-Packard örneğinde de belirtildiği gibi, kalite algısı doğrudan müşteri beklentilerine bağlıdır. Tıbbi bir cihaz müşterisi için en yüksek öncelik güvenilirlik ve doğruluk iken, bir yazıcı müşterisi için kullanım kolaylığı daha öncelikli olabilir.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 2</div>
-                            <div class="question-text">Aşağıdakilerden hangisi Michael Rappa'nın sınıflandırdığı 9 temel internet iş modelinden biri değildir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Aracılık (Brokerage)</li>
-                                <li class="option correct"><span class="option-letter">b)</span> Hizmet olarak Yazılım (SaaS)</li>
-                                <li class="option"><span class="option-letter">c)</span> Reklamcılık (Advertising)</li>
-                                <li class="option"><span class="option-letter">d)</span> Ticaret (Merchant)</li>
-                                <li class="option"><span class="option-letter">e)</span> Topluluk (Community)</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Michael Rappa'nın sınıflandırması 9 temel iş modelini (Aracılık, Reklamcılık, Öncü, Ticaret vb.) içerir. SaaS (Hizmet olarak Yazılım) ise bir iş modelinden çok, bir yazılım dağıtım ve lisanslama modelidir ve bu sınıflandırmada doğrudan yer almaz.
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-number">Soru 3</div>
-                            <div class="question-text">Bir ürünün mülkiyeti satıcıda kalırken, alıcının belirli koşullara uygun olarak ürünü kullanma hakkını elde etmesi hangi iş modelidir?</div>
-                            <ul class="options">
-                                <li class="option"><span class="option-letter">a)</span> Kira (Lease)</li>
-                                <li class="option"><span class="option-letter">b)</span> Satınalma (Purchase)</li>
-                                <li class="option"><span class="option-letter">c)</span> Ortaklık (Affiliate)</li>
-                                <li class="option correct"><span class="option-letter">d)</span> Lisans (License)</li>
-                                <li class="option"><span class="option-letter">e)</span> Abonelik (Subscription)</li>
-                            </ul>
-                            <button class="show-answer-btn">Açıklamayı Göster</button>
-                            <div class="explanation">
-                                <strong>Açıklama:</strong> Lisanslama, bir ürünün mülkiyeti satıcıda kalırken, alıcının belirli koşullar altında (örn: belirli bir süre, belirli sayıda kullanıcı) ürünü kullanma hakkını devralmasıdır.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        
-                <!-- Özet Bilgiler -->
-                <div class="week-section">
-                    <div class="week-header" data-week="summary">
-                        <div>
-                            <div class="week-title">📊 Özet ve İstatistikler</div>
-                            <div class="week-subtitle">Tüm Haftalar Özeti</div>
-                        </div>
-                        <span class="toggle-icon" id="icon-summary">▼</span>
-                    </div>
-                    <div class="week-content" id="week-summary">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
-                            <div style="background: #e8f6ff; padding: 20px; border-radius: 10px; text-align: center;">
-                                <h3 style="color: #3498db; margin-bottom: 10px;">🎯 Konu Dağılımı</h3>
-                                <p><strong>Hafta 1-2:</strong> Kalite Temelleri ve Hata Türleri</p>
-                                <p><strong>Hafta 3-4:</strong> Yaşam Döngüleri ve Tasarım</p>
-                                <p><strong>Hafta 5-6:</strong> Güvenilirlik ve Test Stratejileri</p>
-                                <p><strong>Hafta 7-8:</strong> Kalite Özellikleri ve Sertifikalar</p>
-                                <p><strong>Hafta 9-10:</strong> CASE Araçları ve Proje Yönetimi</p>
-                                <p><strong>Hafta 11-12:</strong> Kalite Modelleri ve IEEE Standartları</p>
-                                <p><strong>Hafta 13-14:</strong> Six Sigma ve İş Modelleri</p>
-                            </div>
-                            
-                            <div style="background: #e8f8f5; padding: 20px; border-radius: 10px; text-align: center;">
-                                <h3 style="color: #27ae60; margin-bottom: 10px;">🔍 Görsel/Diyagram Soruları</h3>
-                                <p><strong>Yazılım Modelleri:</strong> V, Çağlayan, HIPO</p>
-                                <p><strong>Süreç Diyagramları:</strong> DMAIC</p>
-                                <p><strong>Eğriler:</strong> Yazılım Güvenilirlik Eğrisi</p>
-                            </div>
-                            
-                            <div style="background: #fdf2e9; padding: 20px; border-radius: 10px; text-align: center;">
-                                <h3 style="color: #e67e22; margin-bottom: 10px;">📚 Anahtar Kavramlar</h3>
-                                <p><strong>Kalite Faktörleri:</strong> McCall Modeli, Güvenilirlik, İşlevsellik</p>
-                                <p><strong>Test Türleri:</strong> Birim, Entegrasyon, Güvenlik, Proaktif</p>
-                                <p><strong>Standartlar:</strong> IEEE, ISO, CASE</p>
-                                <p><strong>Yönetim Metodolojileri:</strong> DMAIC, Six Sigma, PERT</p>
-                            </div>
-                        </div>
-                        
-                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #3498db;">
-                            <h3 style="color: #2c3e50; margin-bottom: 15px;">🎓 Sınav İpuçları</h3>
-                            <ul style="line-height: 1.8; color: #2c3e50;">
-                                <li><strong>Güvenilirlik Kavramları:</strong> Hata → Kusur → Arıza sıralamasını iyi bilin.</li>
-                                <li><strong>Test Türleri:</strong> Her testin amacını ve hangi aşamada yapıldığını ayırt edin (Proaktif vs Reaktif, Birim vs Entegrasyon).</li>
-                                <li><strong>Yazılım Modelleri:</strong> V Model, Çağlayan, Tekrarlayan ve Döngüsel modellerin avantaj/dezavantaj farklarını öğrenin.</li>
-                                <li><strong>Kalite Modelleri:</strong> McCall modelindeki üç ana kategoriyi (Çalışma, Revizyon, Geçiş) ve alt faktörlerini hatırlayın.</li>
-                                <li><strong>Standartlar ve Araçlar:</strong> IEEE, ISO gibi standart belirleyici kurumları ve CASE araçlarının ne işe yaradığını bilin.</li>
-                                <li><strong>Six Sigma:</strong> DMAIC adımlarını (Tanımla, Ölç, Analiz et, İyileştir, Kontrol et) sırasıyla ve amaçlarıyla hatırlayın.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="single-view">
-                <div id="single-question-container"></div>
-                <div id="single-view-nav">
-                    <button id="prev-question-btn">Önceki</button>
-                    <span id="question-progress"></span>
-                    <button id="next-question-btn">Sonraki</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div class="controls" id="fab-controls">
-        <div class="fab-menu">
-            <button class="control-btn fab-action" data-control="expand-all" title="Tümünü Aç">📖</button>
-            <button class="control-btn fab-action" data-control="collapse-all" title="Tümünü Kapat">📝</button>
-            <button class="control-btn fab-action" data-control="scroll-top" title="Yukarı Çık">⬆️</button>
+        <div class="header">
+            <h1>TYZM-614</h1>
+            <p>Yazılım Kalite Güvencesi ve Standartlar - Kapsamlı Sınav</p>
+            <!-- WhatsApp Browser Detection -->
+            <div id="browser-info" class="browser-info"></div>
         </div>
-        <button class="control-btn fab-main" id="fab-main-btn" title="Kontroller">
-            <span>+</span>
-        </button>
+
+        <div class="exam-controls">
+            <div class="progress-info">
+                <span id="progress-text">Soru 1 / 42</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-secondary" id="answer-mode-btn">
+                    Cevapları Göster
+                </button>
+                <button type="button" class="btn btn-primary hidden-btn" id="debug-btn">
+                    Yeniden Yükle
+                </button>
+            </div>
+        </div>
+
+        <div class="question-container" id="question-container">
+            <!-- Loading placeholder for WhatsApp -->
+            <div id="loading-placeholder" class="loading-container">
+                <div class="loading-title">Sorular yükleniyor...</div>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <button type="button" id="force-load-btn" class="manual-load-btn">
+                    Soruları Yükle
+                </button>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button type="button" class="btn btn-secondary" id="prev-btn" disabled>
+                ← Önceki
+            </button>
+            <div>
+                <button type="button" class="btn btn-primary hidden-element" id="finish-btn">
+                    Sınavı Bitir
+                </button>
+            </div>
+            <button type="button" class="btn btn-primary" id="next-btn">
+                Sonraki →
+            </button>
+        </div>
+
+        <div class="results" id="results">
+            <!-- Sonuçlar buraya gelecek -->
+        </div>
     </div>
 
-    <script type="module" src="./index.tsx"></script>
-<script type="module" src="/index.tsx"></script>
+    <script>
+        const questions = [
+            {
+                id: 1,
+                week: "Hafta 1",
+                text: "Aşağıdakilerden hangisi yazılım güvenilirliğin temel kavramı değildir?",
+                options: [
+                    "Hata",
+                    "Kusur", 
+                    "Arıza",
+                    "Aksaklık",
+                    "Zamanda Gecikme"
+                ],
+                correct: 4,
+                explanation: "Yazılım güvenilirliği hata, kusur ve arıza üçlüsüyle tanımlanır. Zamanda gecikme bir performans sorunudur, temel bir güvenilirlik kavramı değildir."
+            },
+            {
+                id: 2,
+                week: "Hafta 1",
+                text: "Aşağıdakilerden hangisi sağlamlık veya sürdürülebilirlik gibi fonksiyonel ve işlevsel olmayan gereksinimlerin ele alınmasıyla ilgilenen süreçtir?",
+                options: [
+                    "Yazılım Kalite Güvencesi",
+                    "Yazılım İşlevsel Kalitesi",
+                    "Yazılım Yapısal Kalitesi",
+                    "Yazılım Kalite Kontrolü",
+                    "Hiçbiri"
+                ],
+                correct: 2,
+                explanation: "Yazılım Yapısal Kalitesi, sağlamlık ve sürdürülebilirlik gibi işlevsel olmayan gereksinimleri ele alır."
+            },
+            {
+                id: 3,
+                week: "Hafta 1",
+                text: "I. Test aşamasında bir aksaklık vardı.\nII. Bu tasarımcı hatasıdır.\nIII. Sistem bozuldu.\nIV. Alt sistem denetiminde arıza olduğunu raporlamışlar.\n\nYukarıda verilen örnek cümlelerin hangisinde hata sonucu, çalıştırılan kusurdan kaynaklıdır?",
+                options: [
+                    "I ve II",
+                    "Yalnız I",
+                    "III ve IV",
+                    "Yalnız IV",
+                    "Hepsi"
+                ],
+                correct: 4,
+                explanation: "Verilen tüm cümleler, hata (insan eylemi), kusur/aksaklık (koddaki sorun) ve arıza (sistemin çökmesi) arasındaki ilişkiyi farklı açılardan ifade eder."
+            },
+            {
+                id: 4,
+                week: "Hafta 2",
+                text: "Bilgisayar operatörü olan Grace Hopper'in bulduğu ilk \"hata\" aşağıdakilerden hangisidir?",
+                options: [
+                    "Bug",
+                    "Failure",
+                    "Kusur",
+                    "Debug",
+                    "Hata"
+                ],
+                correct: 0,
+                explanation: "Grace Hopper'ın bulduğu güve, bilgisayar terminolojisine \"bug\" (böcek) olarak geçmiştir."
+            },
+            {
+                id: 5,
+                week: "Hafta 2",
+                text: "Yanlış bir sonuç üreten bir insan eylemi aşağıdakilerden hangisidir?",
+                options: [
+                    "Bug",
+                    "Hata",
+                    "Kusur",
+                    "Debug",
+                    "Arıza"
+                ],
+                correct: 1,
+                explanation: "ISO 24765 standardına göre \"Hata\", yanlış bir sonuç üreten bir insan eylemidir."
+            },
+            {
+                id: 6,
+                week: "Hafta 2",
+                text: "I. Kusurların çalıştırılması, sistemin arızalanmasına neden olabilir.\nII. Hataları debug'lar oluşturur.\nIII. Arızalar sadece söz dizim hatalarından dolayı oluşur.\nIV. Arıza, bir işlevin çalışma yeteneğinin yitirilmesidir.\n\nYukarıdaki ifadelere göre, aşağıdakilerden hangisi doğrudur?",
+                options: [
+                    "I, II ve IV",
+                    "II ve III",
+                    "I ve IV",
+                    "I ve II",
+                    "sadece I"
+                ],
+                correct: 2,
+                explanation: "I. ifade doğrudur (kusur çalışınca arıza olur). IV. ifade arızanın tanımıdır ve doğrudur. II yanlıştır (debug, hata ayıklama demektir). III yanlıştır (arızalar sadece sözdizimi hatalarından kaynaklanmaz)."
+            },
+            {
+                id: 7,
+                week: "Hafta 3",
+                text: "Aşağıdaki modellerin hangisinde bir önceki aşamayı geçtikten sonra, daha sonraki aşamalarda sorunların olması durumunda geriye gitme şansımız olmuyor?",
+                options: [
+                    "V Modeli",
+                    "Tekrarlayan Model",
+                    "Evrimsel Model",
+                    "Agile",
+                    "Çağlayan Model"
+                ],
+                correct: 4,
+                explanation: "Çağlayan modeli katı bir şekilde sıralıdır, bir aşama bittikten sonra geri dönülemez."
+            },
+            {
+                id: 8,
+                week: "Hafta 3",
+                text: "Aşağıdaki diyagram, merkezden başlayıp dışarıya doğru genişleyen ve her turda aynı dört ana adımdan geçen döngüsel bir süreci göstermektedir. Bu diyagram hangi modeli ifade etmektedir?",
+                isVisual: true,
+                diagram: `<div class="spiral-diagram">
+                    <div class="diagram-title">DÖNGÜSEL MODEL DİYAGRAMI</div>
+                    <div>[ Hedef Belirleme ]</div>
+                    <div>↗ ↑ ↖</div>
+                    <div>[Risk Analizi] ← MERKEZ → [Prototipleme]</div>
+                    <div>↘ ↓ ↙</div>
+                    <div>[ Geliştirme ve Test ] → [ Sonraki Faz Planlaması ]</div>
+                    <div class="diagram-subtitle">Her döngü dışarıya doğru genişler</div>
+                </div>`,
+                options: [
+                    "Çağlayan Model",
+                    "Tekrarlayan Model",
+                    "V Modeli",
+                    "Döngüsel (Spiral) Model",
+                    "Hiçbiri"
+                ],
+                correct: 3,
+                explanation: "Metinsel diyagram, merkezden başlayarak her döngüde risk analizi ve prototipleme yapan Spiral modelin yapısını göstermektedir."
+            },
+            {
+                id: 9,
+                week: "Hafta 4",
+                text: "IF … THEN … ELSE …\nDO … WHILE …\n\nYukarıdaki anlatım şeklinin ismi aşağıdakilerden hangisidir?",
+                options: [
+                    "Sözde Kod (Pseudo Code)",
+                    "Yapısal İngilizce",
+                    "Kontrol Yapıları",
+                    "Ruby programlama dili",
+                    "BASIC dili"
+                ],
+                correct: 1,
+                explanation: "Bu yapı, programlama mantığını belirli anahtar kelimelerle ifade eden Yapısal İngilizce'dir."
+            },
+            {
+                id: 10,
+                week: "Hafta 4",
+                text: "Semantik Versiyonlama nedir?",
+                options: [
+                    "Yazılımın birleştirilmesidir",
+                    "Bir sürüm numaralandırma sistemidir",
+                    "Yazılımın müşteri için isimlendirilmesidir",
+                    "Hepsi",
+                    "Hiçbiri"
+                ],
+                correct: 1,
+                explanation: "Semantik versiyonlama (MAJOR.MINOR.PATCH), yazılım sürümlerini anlamlı bir şekilde numaralandırmak için kullanılır."
+            },
+            {
+                id: 11,
+                week: "Hafta 4",
+                text: "Aşağıdaki diyagram, bir sistemin hiyerarşik olarak daha küçük modüllere ayrıldığını göstermektedir. Bu yapı, programın fonksiyonel ayrışımını göstermektedir. Bu diyagram hangi türe bir örnektir?",
+                isVisual: true,
+                diagram: `<div class="structure-chart">
+                    <div class="diagram-title">HİYERARŞİK MODÜL YAPISI</div>
+                    <div>┌─────────────────┐</div>
+                    <div>│   Ana Modül     │</div>
+                    <div>└─────────────────┘</div>
+                    <div>         │</div>
+                    <div>    ┌────┴────┐</div>
+                    <div>    │         │</div>
+                    <div>┌───────┐ ┌───────┐</div>
+                    <div>│Alt    │ │Alt    │</div>
+                    <div>│Modül 1│ │Modül 2│</div>
+                    <div>└───────┘ └───────┘</div>
+                </div>`,
+                options: [
+                    "Veri akış diyagramı",
+                    "Yapısal Çizelgeler",
+                    "HIPO Diyagramı",
+                    "Yapısal İngilizce",
+                    "Hiçbiri"
+                ],
+                correct: 1,
+                explanation: "Gösterilen hiyerarşik yapı, bir sistemin fonksiyonel alt modüllere ayrılışını gösteren Yapısal Çizelgelere (Structure Charts) bir örnektir."
+            },
+            {
+                id: 12,
+                week: "Hafta 5",
+                text: "Aşağıdaki grafik, bir ürünün yaşam döngüsü boyunca \"Başarısızlık Oranının\" zamana göre değişimini göstermektedir. Eğri önce yüksekten hızla düşer, sonra bir süre yatay ve düşük seyreder, son olarak tekrar yükselişe geçer. Bu \"küvet\" şeklindeki eğri neyi anlatmaktadır?",
+                isVisual: true,
+                diagram: `<div class="bathtub-curve">
+                    <div class="diagram-title">KÜVET EĞRİSİ (BATHTUB CURVE)</div>
+                    <div>Başarısızlık ↑</div>
+                    <div>Oranı        │ ╲</div>
+                    <div>             │  ╲</div>
+                    <div>             │   ╲ ____________</div>
+                    <div>             │    ╲            ╱</div>
+                    <div>             │     ╲__________╱</div>
+                    <div>             └────────────────────────→ Zaman</div>
+                    <div>                │      │          │</div>
+                    <div>              Erken  Kullanım    Aşınma</div>
+                    <div>              Arıza   Ömrü       Dönemi</div>
+                </div>`,
+                options: [
+                    "Yazılım Güvenirliği eğrisidir",
+                    "Donanım Güvenirliği eğrisidir",
+                    "Yazılım Hatalar çizelgesidir",
+                    "Hatalar eğrisi",
+                    "Donanım güncellemeler eğrisidir"
+                ],
+                correct: 1,
+                explanation: "Küvet (bathtub) eğrisi, donanım ürünlerinin ömrü boyunca sergilediği üç arıza dönemini (erken arıza, rastgele arıza, aşınma) gösterir."
+            },
+            {
+                id: 13,
+                week: "Hafta 5",
+                text: "Yazılım Güvenirliği ne işe yarar?",
+                options: [
+                    "Yazılım güvenilirliği, yazılım geliştirme sürecinin en iyi şekilde işlemesi, yazılım ürününün daha iyi ve kaliteli olmasını sağlar.",
+                    "Yazılım güvenilirliği, yazılım uygulamanın kullanıcı gereksinimlerine yazılımın hangi çözümler sunabileceğine bakan ve bunun tasarımını yapan süreçtir.",
+                    "Yazılımın nasıl yazılmaması gerektiği ile ilgili belgelerin hazırlandığı bir süreçtir.",
+                    "Yazılım güvenilirliği, yazılımın güvenli olmasını sağlar."
+                ],
+                correct: 0,
+                explanation: "Yazılım güvenilirliği, yazılım geliştirme sürecinin en iyi şekilde işlemesi, yazılım ürününün daha iyi ve kaliteli olmasını sağlar."
+            },
+            {
+                id: 14,
+                week: "Hafta 5",
+                text: "Yazılım Güvenirliği nedir?",
+                options: [
+                    "Yazılım güvenilirliği, yazılım geliştirme sürecinin en iyi şekilde işlemesi, yazılım ürününün daha iyi ve kaliteli olmasını sağlayan süreçtir.",
+                    "Yazılım güvenilirliği, yazılım uygulamanın kullanıcı gereksinimlerine yazılımın hangi çözümler sunabileceğine bakan ve bunun tasarımını yapan süreçtir.",
+                    "Bir işlevsel birimin, belirli bir zaman aralığında ve verilen şartlar altında istenen işlevi yerine getirme yeteneği.",
+                    "Yazılım güvenilirliği, yazılımın güvenli olması demektir."
+                ],
+                correct: 2,
+                explanation: "Bu, TSE'nin güvenilirlik tanımıdır: Bir işlevsel birimin, belirli bir zaman aralığında ve verilen şartlar altında istenen işlevi yerine getirme yeteneği."
+            },
+            {
+                id: 15,
+                week: "Hafta 6",
+                text: "Proaktif test aşağıdaki yazılım testlerinin hangisidir?",
+                options: [
+                    "Sistemin belirlenen ihtiyaçları karşılayıp karşılamadığını belirlemek üzere yapılan test türüdür.",
+                    "Yazılım geliştirirken yapılan birim testleri, modüllerin testi, entegrasyon testleri ve ürün tamamlandıktan sonra yapılan sistem testlerini içeren test tekniğidir.",
+                    "Sistemin bölümlerine yetkisiz erişimleri ve yapılan sızma testleri tespit etmek amacıyla yapılan test türüdür."
+                ],
+                correct: 1,
+                explanation: "Proaktif test, geliştirme sürecinin erken aşamalarında başlayan ve sürekli devam eden bir test yaklaşımıdır."
+            },
+            {
+                id: 16,
+                week: "Hafta 6",
+                text: "Sistemin bölümlerine yetkisiz erişimleri ve yapılan sızma girişimlerini tespit etmek amacıyla yapılan test türü aşağıdakilerden hangisidir?",
+                options: [
+                    "Sistem Testi",
+                    "Güvenlik Testi",
+                    "Birim Testi",
+                    "Hepsi",
+                    "Hiçbiri"
+                ],
+                correct: 1,
+                explanation: "Güvenlik testi, yetkisiz erişim ve sızma gibi güvenlik açıklarını bulmayı hedefler."
+            },
+            {
+                id: 17,
+                week: "Hafta 6",
+                text: "Programların ya da modüllerin, sistemin bütünü içinde düzgün çalışıp çalışmadıklarını denetleyen test türü aşağıdakilerden hangisidir?",
+                options: [
+                    "Birim Testi",
+                    "Sistem Testi",
+                    "Entegrasyon Testi",
+                    "Hepsi",
+                    "Hiçbiri"
+                ],
+                correct: 2,
+                explanation: "Modüllerin bir araya geldikten sonraki uyumunu test etme sürecine entegrasyon testi denir."
+            },
+            {
+                id: 18,
+                week: "Hafta 7",
+                text: "Aşağıdakilerden hangisi yazılım kalitesi özelliklerinden değildir?",
+                options: [
+                    "Verimlilik",
+                    "İşlevsellik",
+                    "Güvenilirlik",
+                    "Güvenlik",
+                    "Hiçbiri"
+                ],
+                correct: 3,
+                explanation: "Güvenlik, İşlevsellik'in bir alt özelliğidir. ISO 9126'daki 6 ana özellik şunlardır: İşlevsellik, Güvenilirlik, Kullanılabilirlik, Verimlilik, Sürdürülebilirlik, Taşınabilirlik."
+            },
+            {
+                id: 19,
+                week: "Hafta 7",
+                text: "Aşağıdaki özelliklerin hangisi yazılımın belirli bir süre veya belirli bir sayıda işlem için belirlenen koşullarda gerekli görevleri gerçekleştirme yeteneğini tanımlar?",
+                options: [
+                    "İşlevsellik",
+                    "Verimlilik",
+                    "Taşınabilirlik",
+                    "Sürdürülebilirlik",
+                    "Güvenilirlik"
+                ],
+                correct: 4,
+                explanation: "Tanım, yazılımın güvenilirlik özelliğini açıklar."
+            },
+            {
+                id: 20,
+                week: "Hafta 7",
+                text: "McCabe karmaşıklık ölçütü ne işe yarar?",
+                options: [
+                    "Programın kod satırlarının sayısını vermek için",
+                    "Program kodlarının hataya ne kadar meyilli olduğunu göstermek için",
+                    "Değişkenleri tanımlamak ve saymak için",
+                    "Yazılım hatalarını artırmak için"
+                ],
+                correct: 1,
+                explanation: "McCabe ölçütü, bir kodun mantıksal karmaşıklığını ve dolayısıyla hata yapma potansiyelini ölçer."
+            },
+            {
+                id: 21,
+                week: "Hafta 8",
+                text: "Aşağıdakilerden hangisi ISO 9000-3 Sertifikasyon sürecinin bir aşaması değildir?",
+                options: [
+                    "Kendi kuruluşun SQA sistemini geliştirmek",
+                    "Kendi Yazılım Kalite Güvencesi sistemini kullanmak",
+                    "Kendi kuruluşun SQA sistemini uygulamak",
+                    "Sertifika denetimlerine uğramak",
+                    "Sertifika denetimlerine uğramamak"
+                ],
+                correct: 4,
+                explanation: "Sertifika almanın son adımı denetimlere uğramaktır."
+            },
+            {
+                id: 22,
+                week: "Hafta 8",
+                text: "ISO 9000-3 sertifikasının alınabilmesi için gerekli aşamaları sıralayınız:",
+                options: [
+                    "- Kendi kuruluşun SQA sistemini geliştirmek; - Kendi kuruluşun SQA sistemini uygulamak; - Sertifika denetimlerine uğramaya hazır olmak.",
+                    "- Kuruluşta bir SQA sistemini geliştirmek; - Sertifika denetimlerine uğramaya hazır olmak.",
+                    "- Sertifika denetimlerine uğramaya hazır olmak; - SQA sistemini kullanmak; - Kuruluşta bu SQA sistemini uygulamak;"
+                ],
+                correct: 0,
+                explanation: "Sertifikasyon süreci; sistemi geliştirmek, uygulamak ve ardından denetimlere hazır olmaktır."
+            },
+            {
+                id: 23,
+                week: "Hafta 8",
+                text: "Aşağıdakilerden hangisi standart geliştirme ile ilgili bir organizasyon değildir?",
+                options: [
+                    "IEEE",
+                    "ISA",
+                    "ISO",
+                    "ANSI"
+                ],
+                correct: 1,
+                explanation: "Sunumda IEEE, ISO, ANSI gibi kurumlar listelenmiş, ISA (International Society of Automation) listelenmemiştir."
+            },
+            {
+                id: 24,
+                week: "Hafta 9",
+                text: "CASE kısaltımının açılımı aşağıdakilerden hangisidir?",
+                options: [
+                    "Computer Aided Software Engineering",
+                    "Computer And Software Engineering",
+                    "Computer Aided Software Examples",
+                    "Hiçbiri"
+                ],
+                correct: 0,
+                explanation: "CASE: Computer Aided Software Engineering (Bilgisayar Destekli Yazılım Mühendisliği)"
+            },
+            {
+                id: 25,
+                week: "Hafta 9",
+                text: "Çeşitli yazılım bileşenleri ve sistem yapısı arasındaki bileşenleri, verileri ve kontrol akışını grafik bir biçimde temsil etmek için kullanılan CASE araçlarının türü aşağıdakilerden hangisidir?",
+                options: [
+                    "Belgelendirme Araçları (Documentation Tools)",
+                    "Süreç Modelleme Araçları (Process Modeling Tools)",
+                    "Proje Yönetim Araçları (Project Management Tools)",
+                    "Analiz Araçları (Analysis Tool)",
+                    "Diyagram Araçları (Diagram Tools)"
+                ],
+                correct: 4,
+                explanation: "Veri akışı, sistem yapısı gibi unsurları grafiksel olarak temsil eden araçlar Diyagram Araçlarıdır."
+            },
+            {
+                id: 26,
+                week: "Hafta 9",
+                text: "Aşağıdakilerden hangisi CASE araçlarının Prototip hazırlama türünden bir araçtır?",
+                options: [
+                    "Redmine sistemi",
+                    "Mockup hazırlama araçları",
+                    "Matlab",
+                    "IDE(Integrated Development Environment) araçları",
+                    "Blender"
+                ],
+                correct: 1,
+                explanation: "Mockup (makep) araçları, bir ürünün prototipini (ilkel örneğini) oluşturmak için kullanılır."
+            },
+            {
+                id: 27,
+                week: "Hafta 9",
+                text: "Aşağıdakilerden hangisi bir CASE araçlarından biri değildir?",
+                options: [
+                    "Derleyiciler",
+                    "Hata ayıklayıcılar",
+                    "Wine",
+                    "Belgelendirme Araçları (Documentation Tools)",
+                    "Git"
+                ],
+                correct: 2,
+                explanation: "Wine bir uyumluluk katmanıdır; yazılım geliştirme sürecine doğrudan yardımcı olan bir CASE aracı değildir."
+            },
+            {
+                id: 28,
+                week: "Hafta 10",
+                text: "I. Risk yönetimi faaliyetlerinin kontrolü\nII. Proje çizelgesi kontrolü\nIII. Proje kaynak kontrolü\nIV. Proje bütçe kontrolü.\n\nProje ilerleme kontrolünün ana bileşenleri yukarıdakilerden hangileridir?",
+                options: [
+                    "I, II ve IV",
+                    "II ve III",
+                    "I ve IV",
+                    "Hiçbiri",
+                    "Hepsi"
+                ],
+                correct: 4,
+                explanation: "Verilen dört madde, proje ilerleme kontrolünün temel bileşenleridir."
+            },
+            {
+                id: 29,
+                week: "Hafta 10",
+                text: "Belirli bir projeyi tamamlamakla ilgili görevleri analiz etmek ve temsil etmek için bir proje planlama tekniğidir. Etkinlik süresi değişkenliğini içeren bu teknik aşağıdakilerden hangisidir?",
+                options: [
+                    "CMP",
+                    "PERT",
+                    "COTS",
+                    "Hepsi",
+                    "Hiçbiri"
+                ],
+                correct: 1,
+                explanation: "PERT (Program Evaluation and Review Technique), süre belirsizliklerini dikkate alan bir proje planlama tekniğidir."
+            },
+            {
+                id: 30,
+                week: "Hafta 10",
+                text: "Aşağıdakilerden hangisi Yazılım Kalite Maliyeti konusunda ekonomik veriler temelinde yapılan yönetimlerdendir?",
+                options: [
+                    "Hata önleme (meydana gelmeden önce) ve hataların tespiti ile ilgili maliyetleri kontrol etmek.",
+                    "SQA bütçesinin revize edilmesi ve güncellenmesi için yazılım arızaları, önleme ve değerlendirme maliyetlerinin ekonomik zararlarının kapsamını değerlendirmek.",
+                    "SQA faaliyetlerinde planlı artış veya düşüşlerin ekonomik değerlendirmesini veya geçmiş ekonomik performansa dayalı olarak yeni veya güncellenmiş SQA altyapısına yatırım yapmayı kolaylaştırmak.",
+                    "Hepsi"
+                ],
+                correct: 3,
+                explanation: "Verilen üç madde de kalite maliyetini yönetme ve analiz etme yaklaşımlarıdır."
+            },
+            {
+                id: 31,
+                week: "Hafta 11",
+                text: "Aşağıdaki faktör modellerinden hangisi diğer modellerden farklı bir modeldir?",
+                options: [
+                    "McCall Faktör Modeli",
+                    "Evans ve Marciniak'ın faktör modeli",
+                    "Rome Laboratory (Rome Labs) Modeli",
+                    "Deutsch ve Willis'in faktör modeli",
+                    "Hepsi aynı"
+                ],
+                correct: 2,
+                explanation: "Diğerleri genel kalite faktör modelleri iken, Rome Labs modeli özellikle \"güvenilirlik\" ve \"hata yoğunluğu\" öngörümüne odaklanır."
+            },
+            {
+                id: 32,
+                week: "Hafta 11",
+                text: "Aşağıdakilerden hangisi McCall modelindeki ürün geçiş faktörlerindendir?",
+                options: [
+                    "Taşınabilirlik",
+                    "Esneklik",
+                    "Bakım",
+                    "Test edilebilirlik",
+                    "Verimlilik"
+                ],
+                correct: 0,
+                explanation: "McCall modelinde Taşınabilirlik, Yeniden Kullanılabilirlik ve Birlikte Çalışabilirlik \"ürün geçiş\" faktörleridir."
+            },
+            {
+                id: 33,
+                week: "Hafta 11",
+                text: "Aşağıdakilerden hangisi McCall modelindeki ürün revizyon faktörlerinden değildir?",
+                options: [
+                    "Taşınabilirlik",
+                    "Test edilebilirlik",
+                    "Bakım",
+                    "Esneklik",
+                    "Bütünlük"
+                ],
+                correct: 0,
+                explanation: "\"Ürün revizyon\" faktörleri Bakım, Esneklik ve Test Edilebilirlik'tir. Taşınabilirlik \"geçiş\" faktörü, Bütünlük ise \"çalışma\" faktörüdür."
+            },
+            {
+                id: 34,
+                week: "Hafta 12",
+                text: "Aşağıdakilerden hangisi IEEE ana sınıflarından değildir?",
+                options: [
+                    "Kavramsal Standartlar",
+                    "Uygunluk Standartlarına uyumluluk",
+                    "Kalite Standartları",
+                    "Rehberlik Standartları",
+                    "Hiçbiri"
+                ],
+                correct: 2,
+                explanation: "IEEE standartları Kavramsal, Uygunluk ve Rehberlik olarak üçe ayrılır."
+            },
+            {
+                id: 35,
+                week: "Hafta 12",
+                text: "Aşağıdakilerden hangisi IEEE süreç sınıflarından değildir?",
+                options: [
+                    "IEEE'de bir süreç sınıflandırılması yoktur",
+                    "Birincil yaşam döngüsü süreçleri (\"Primary processes\")",
+                    "Yaşam döngüsü süreçlerinin desteklenmesi (\"Supporting processes\")",
+                    "Kurumsal yaşam döngüsü süreçleri (\"Organizational processes\")",
+                    "Merkezi işlemler süreçleri (\"Central Processes\")"
+                ],
+                correct: 4,
+                explanation: "IEEE 12207'de süreçler Birincil, Destekleyici ve Kurumsal olarak sınıflandırılır."
+            },
+            {
+                id: 36,
+                week: "Hafta 12",
+                text: "Aşağıdakilerden hangisi IEEE 1028 gözden geçirme standardının sistematik derleme türlerinden değildir?",
+                options: [
+                    "Test Durumları",
+                    "Yönetim Yorumları",
+                    "Teknik İncelemeler",
+                    "Üstünden hızlı geçme (Walkthrough)",
+                    "Hepsi IEEE 1028'in sistematik derleme türleridir."
+                ],
+                correct: 0,
+                explanation: "IEEE 1028 beş tür gözden geçirme tanımlar: Yönetim yorumları, Teknik incelemeler, Denetlemeler (Inspections), Walkthroughs ve Denetimler (Audits)."
+            },
+            {
+                id: 37,
+                week: "Hafta 13",
+                text: "Altı Sigma (Six Sigma) nedir?",
+                options: [
+                    "Bir yazılım hayat döngüsü modeli",
+                    "Bir kalite standardıdır",
+                    "Bir ürün yönetimi yöntembilimidir",
+                    "Kalite metrik türüdür",
+                    "Bir test ürünüdür"
+                ],
+                correct: 2,
+                explanation: "Altı Sigma, süreçlerdeki hataları azaltarak kaliteyi artıran bir yönetim metodolojisidir."
+            },
+            {
+                id: 38,
+                week: "Hafta 13",
+                text: "DMAIC yaklaşımının süreç iyileştirme adımlarının hangisi iyileştirme faaliyetlerinin yönünü belirlemesinden sorumludur?",
+                options: [
+                    "Ölçüm",
+                    "İyileştirme",
+                    "Kontrol",
+                    "Tanım",
+                    "Test"
+                ],
+                correct: 3,
+                explanation: "DMAIC döngüsünün ilk adımı \"Define\" (Tanım), problemin ve hedeflerin belirlendiği aşamadır."
+            },
+            {
+                id: 39,
+                week: "Hafta 13",
+                text: "Aşağıdakilerden hangisi Six Sigma'nın en önemli ve temel odak noktasıdır?",
+                options: [
+                    "Müşteri odaklı",
+                    "Kayıp odaklı",
+                    "Hızlı sonuç odaklı",
+                    "Sürekli iyileştirmelere odaklanma",
+                    "Çalışmadaki azalma ve döngüye odaklanması"
+                ],
+                correct: 0,
+                explanation: "Six Sigma, kusuru müşterinin beklentilerinin karşılanmaması olarak tanımladığı için müşteri odaklıdır."
+            },
+            {
+                id: 40,
+                week: "Hafta 14",
+                text: "Aşağıdaki verilen iş modellerin hangilerinde \"kalite\" anlayışı aynıdır?",
+                options: [
+                    "Tıbbi işleri ile Mühendislik işleri",
+                    "İnternet Bankacılığı ile Bir yazılım danışmanlığı şirketi",
+                    "Üniversite işleri ile İnşaat sektörü işleri",
+                    "Hepsinde",
+                    "Hiçbirinde"
+                ],
+                correct: 4,
+                explanation: "Sunumda verilen kardiyoloji/yazıcı örneği gibi, her iş modelinin ve sektörün kalite beklentileri farklıdır."
+            },
+            {
+                id: 41,
+                week: "Hafta 14",
+                text: "Aşağıdakilerden hangisi internetteki iş modellerinin sınıflandırılması arasında yer almamaktadır?",
+                options: [
+                    "Aracılık (Brokerage)",
+                    "Hizmet olarak bir yazılım (SaaS - Software as a Service)",
+                    "Reklamcılık (Advertising)",
+                    "Ticaret (Merchant)",
+                    "Topluluk (Community)"
+                ],
+                correct: 1,
+                explanation: "Michael Rappa'nın temel iş modeli sınıflandırmasında SaaS yer almaz. SaaS bir dağıtım ve gelir modelidir."
+            },
+            {
+                id: 42,
+                week: "Hafta 14",
+                text: "Ürünün belirli koşullara uygun olarak kullanılması için hakların devri aşağıdakilerden hangisidir?",
+                options: [
+                    "Kira (Lease)",
+                    "Satınalma (Purchase)",
+                    "Ölçüm (Metric)",
+                    "Lisans (License)",
+                    "Hiçbiri"
+                ],
+                correct: 3,
+                explanation: "Lisanslama, mülkiyeti devretmeden, ürünün belirli kurallar çerçevesinde kullanım hakkını vermektir."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let showAnswers = false;
+        let examFinished = false;
+
+        // Force load questions function
+        window.forceLoadQuestions = function() {
+            console.log('Force loading questions...');
+            const loadingPlaceholder = document.getElementById('loading-placeholder');
+            if (loadingPlaceholder) {
+                loadingPlaceholder.style.display = 'none';
+            }
+            
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            loadQuestion();
+            updateProgress();
+        };
+
+        function initializeExam() {
+            // WhatsApp browser compatibility
+            console.log('Initializing exam...');
+            
+            userAnswers = new Array(questions.length).fill(null);
+            
+            // Hide loading placeholder
+            const loadingPlaceholder = document.getElementById('loading-placeholder');
+            if (loadingPlaceholder) {
+                loadingPlaceholder.style.display = 'none';
+            }
+            
+            // Force container visibility
+            const container = document.getElementById('question-container');
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            }
+            
+            // Load first question
+            setTimeout(() => {
+                loadQuestion();
+                updateProgress();
+            }, 100);
+        }
+
+        // Event Listeners Setup (WhatsApp Safe)
+        function setupEventListeners() {
+            // Answer mode toggle
+            const answerModeBtn = document.getElementById('answer-mode-btn');
+            if (answerModeBtn) {
+                answerModeBtn.addEventListener('click', toggleAnswerMode);
+            }
+
+            // Debug button
+            const debugBtn = document.getElementById('debug-btn');
+            if (debugBtn) {
+                debugBtn.addEventListener('click', function() {
+                    console.log('Manual initialization triggered');
+                    initializeExam();
+                });
+            }
+
+            // Force load button
+            const forceLoadBtn = document.getElementById('force-load-btn');
+            if (forceLoadBtn) {
+                forceLoadBtn.addEventListener('click', forceLoadQuestions);
+            }
+
+            // Navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', previousQuestion);
+            }
+
+            const nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', nextQuestion);
+            }
+
+            const finishBtn = document.getElementById('finish-btn');
+            if (finishBtn) {
+                finishBtn.addEventListener('click', showResults);
+            }
+        }
+
+        function selectOption(optionIndex) {
+            if (!showAnswers) {
+                userAnswers[currentQuestion] = optionIndex;
+                
+                // Re-render to update styling and show explanation if correct
+                renderQuestion();
+            }
+        }
+
+        // DOM API based question rendering (WhatsApp Web compatible)
+        function renderQuestion() {
+            const container = document.getElementById('question-container');
+            if (!container) {
+                console.error('Container not found');
+                return;
+            }
+
+            // Clear old content
+            container.textContent = '';
+            
+            const question = questions[currentQuestion];
+            const userAnswer = userAnswers[currentQuestion];
+            const isAnswered = userAnswer !== null;
+            const isCorrect = isAnswered && userAnswer === question.correct;
+            
+            // Create main question div
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            
+            // Create header
+            const header = document.createElement('div');
+            header.classList.add('question-header');
+            
+            const weekInfo = document.createElement('div');
+            weekInfo.classList.add('week-info');
+            weekInfo.textContent = question.week;
+            
+            const questionNumber = document.createElement('div');
+            questionNumber.classList.add('question-number');
+            questionNumber.textContent = `Soru ${currentQuestion + 1} / ${questions.length}`;
+            
+            header.appendChild(weekInfo);
+            header.appendChild(questionNumber);
+            
+            // Create question text
+            const questionText = document.createElement('div');
+            questionText.classList.add('question-text');
+            questionText.textContent = question.text;
+            
+            // Add visual diagram if exists
+            if (question.isVisual && question.diagram) {
+                const diagramDiv = document.createElement('div');
+                diagramDiv.classList.add('diagram');
+                diagramDiv.innerHTML = question.diagram; // Safe for diagram content
+                questionDiv.appendChild(diagramDiv);
+            }
+            
+            // Create options container
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+            
+            // Create each option
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.classList.add('option', `option-${index}`);
+                optionDiv.dataset.option = index;
+                
+                // Apply styling based on state
+                if (showAnswers) {
+                    if (index === question.correct) {
+                        optionDiv.classList.add('correct');
+                    } else if (userAnswer === index && index !== question.correct) {
+                        optionDiv.classList.add('incorrect');
+                    }
+                } else {
+                    // Normal mode - only show if this question is answered
+                    if (isAnswered) {
+                        if (index === question.correct) {
+                            optionDiv.classList.add('answered-correct');
+                        } else if (userAnswer === index && index !== question.correct) {
+                            optionDiv.classList.add('answered-incorrect');
+                        }
+                    } else if (userAnswer === index) {
+                        optionDiv.classList.add('selected');
+                    }
+                }
+                
+                // Create option letter
+                const optionLetter = document.createElement('span');
+                optionLetter.classList.add('option-letter');
+                optionLetter.textContent = `${String.fromCharCode(65 + index)})`;
+                
+                // Create option text
+                const optionText = document.createElement('span');
+                optionText.classList.add('option-text');
+                optionText.textContent = option;
+                
+                optionDiv.appendChild(optionLetter);
+                optionDiv.appendChild(optionText);
+                
+                // Add click event listener
+                optionDiv.addEventListener('click', () => selectOption(index));
+                
+                optionsDiv.appendChild(optionDiv);
+            });
+            
+            // Add explanation if in answer mode OR if this question was answered correctly
+            if (showAnswers || (isAnswered && isCorrect)) {
+                const explanationDiv = document.createElement('div');
+                explanationDiv.classList.add('review-explanation');
+                
+                if (!showAnswers && isCorrect) {
+                    // Just answered correctly - show only explanation
+                    const explanationText = document.createElement('div');
+                    explanationText.innerHTML = `<strong>✅ Doğru!</strong><br>${question.explanation}`;
+                    explanationDiv.appendChild(explanationText);
+                } else {
+                    // Full answer mode
+                    const correctLetter = String.fromCharCode(65 + question.correct);
+                    const correctAnswerText = document.createElement('strong');
+                    correctAnswerText.textContent = `Doğru Cevap: ${correctLetter}) ${question.options[question.correct]}`;
+                    
+                    const explanationText = document.createElement('div');
+                    explanationText.innerHTML = `<strong>Açıklama:</strong> ${question.explanation}`;
+                    
+                    explanationDiv.appendChild(correctAnswerText);
+                    explanationDiv.appendChild(document.createElement('br'));
+                    explanationDiv.appendChild(explanationText);
+                }
+                
+                explanationDiv.classList.add('show');
+                questionDiv.appendChild(explanationDiv);
+            }
+            
+            // Assemble the question
+            questionDiv.appendChild(header);
+            questionDiv.appendChild(questionText);
+            questionDiv.appendChild(optionsDiv);
+            
+            // Add to container
+            container.appendChild(questionDiv);
+            
+            // Update navigation
+            updateNavigationButtons();
+            
+            // Scroll to top for mobile
+            if (window.scrollTo) {
+                window.scrollTo(0, 0);
+            }
+            
+            console.log('Question rendered successfully via DOM API');
+        }
+
+        function loadQuestion() {
+            console.log('Loading question:', currentQuestion);
+            
+            // DOM rendering delay for mobile/WhatsApp
+            setTimeout(() => {
+                renderQuestion();
+            }, 50);
+        }
+
+        function selectOption(optionIndex) {
+            if (!showAnswers) {
+                userAnswers[currentQuestion] = optionIndex;
+                loadQuestion(); // Reload to show selection
+            }
+        }
+
+        function updateProgress() {
+            const progressText = document.getElementById('progress-text');
+            const progressFill = document.getElementById('progress-fill');
+            
+            progressText.textContent = `Soru ${currentQuestion + 1} / ${questions.length}`;
+            const percentage = ((currentQuestion + 1) / questions.length) * 100;
+            progressFill.style.width = `${percentage}%`;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-flex';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+                updateProgress();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+                updateProgress();
+            }
+        }
+
+        function toggleAnswerMode() {
+            const btn = document.getElementById('answer-mode-btn');
+            showAnswers = !showAnswers;
+            
+            if (showAnswers) {
+                btn.textContent = 'Cevapları Gizle';
+                btn.className = 'btn btn-primary';
+            } else {
+                btn.textContent = 'Cevapları Göster';
+                btn.className = 'btn btn-secondary';
+            }
+            
+            loadQuestion();
+        }
+
+        function calculateResults() {
+            let correct = 0;
+            const weekStats = {};
+            
+            questions.forEach((question, index) => {
+                const isCorrect = userAnswers[index] === question.correct;
+                if (isCorrect) correct++;
+                
+                if (!weekStats[question.week]) {
+                    weekStats[question.week] = { correct: 0, total: 0 };
+                }
+                weekStats[question.week].total++;
+                if (isCorrect) weekStats[question.week].correct++;
+            });
+
+            return {
+                score: correct,
+                total: questions.length,
+                percentage: Math.round((correct / questions.length) * 100),
+                weekStats
+            };
+        }
+
+        function showResults() {
+            const results = calculateResults();
+            const container = document.getElementById('question-container');
+            const navigation = document.querySelector('.navigation');
+            const resultsDiv = document.getElementById('results');
+            
+            container.style.display = 'none';
+            navigation.style.display = 'none';
+            resultsDiv.classList.add('show');
+
+            let scoreClass = 'score-poor';
+            let scoreText = 'Başarısız';
+            
+            if (results.percentage >= 85) {
+                scoreClass = 'score-excellent';
+                scoreText = 'Mükemmel!';
+            } else if (results.percentage >= 70) {
+                scoreClass = 'score-good';
+                scoreText = 'İyi!';
+            } else if (results.percentage >= 50) {
+                scoreClass = 'score-average';
+                scoreText = 'Orta';
+            }
+
+            const weekBreakdown = Object.entries(results.weekStats).map(([week, stats]) => {
+                const weekPercentage = Math.round((stats.correct / stats.total) * 100);
+                return `
+                    <div class="week-item">
+                        <span>${week}</span>
+                        <span>${stats.correct}/${stats.total} (%${weekPercentage})</span>
+                    </div>
+                `;
+            }).join('');
+
+            resultsDiv.innerHTML = `
+                <div class="score-circle ${scoreClass}">
+                    %${results.percentage}
+                </div>
+                <h2>${scoreText}</h2>
+                <p>Toplam ${results.total} sorudan ${results.score} tanesini doğru yanıtladınız.</p>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number">${results.score}</div>
+                        <div class="stat-label">Doğru Cevap</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${results.total - results.score}</div>
+                        <div class="stat-label">Yanlış Cevap</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">%${results.percentage}</div>
+                        <div class="stat-label">Başarı Oranı</div>
+                    </div>
+                </div>
+
+                <div class="week-breakdown">
+                    <h3>Haftalık Performans</h3>
+                    ${weekBreakdown}
+                </div>
+
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="showDetailedReview()">
+                        Detaylı İnceleme
+                    </button>
+                    <button class="btn btn-secondary restart-btn" onclick="restartExam()">
+                        Sınavı Yeniden Başlat
+                    </button>
+                </div>
+
+                <div class="answer-review" id="detailed-review">
+                    <!-- Detaylı inceleme buraya gelecek -->
+                </div>
+            `;
+        }
+
+        function showDetailedReview() {
+            const reviewDiv = document.getElementById('detailed-review');
+            
+            const reviewHtml = questions.map((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                const userLetter = userAnswer !== null ? String.fromCharCode(65 + userAnswer) : 'Cevaplanmadı';
+                const correctLetter = String.fromCharCode(65 + question.correct);
+                
+                return `
+                    <div class="review-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="review-question">
+                            <strong>Soru ${index + 1} (${question.week}):</strong> ${question.text}
+                        </div>
+                        <div class="review-answer">
+                            <strong>Sizin Cevabınız:</strong> ${userLetter}${userAnswer !== null ? ') ' + question.options[userAnswer] : ''}
+                        </div>
+                        <div class="review-answer">
+                            <strong>Doğru Cevap:</strong> ${correctLetter}) ${question.options[question.correct]}
+                        </div>
+                        <div class="review-explanation">
+                            <strong>Açıklama:</strong> ${question.explanation}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            reviewDiv.innerHTML = `
+                <h3>Tüm Soruların Detaylı İncelemesi</h3>
+                ${reviewHtml}
+            `;
+            reviewDiv.classList.add('show');
+        }
+
+        function restartExam() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            showAnswers = false;
+            examFinished = false;
+            
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('question-container').style.display = 'block';
+            document.querySelector('.navigation').style.display = 'flex';
+            
+            const answerBtn = document.getElementById('answer-mode-btn');
+            answerBtn.textContent = 'Cevapları Göster';
+            answerBtn.className = 'btn btn-secondary';
+            
+            initializeExam();
+        }
+
+        // Initialize when DOM is ready - Enhanced for WhatsApp Web
+        function safeInitialize() {
+            console.log('Safe initialize starting...');
+            
+            // Setup all event listeners first
+            setupEventListeners();
+            
+            // Show browser info
+            const browserInfo = document.getElementById('browser-info');
+            if (browserInfo) {
+                const isWhatsApp = /WhatsApp/i.test(navigator.userAgent);
+                const isMobile = /Mobile|iPhone|Android/i.test(navigator.userAgent);
+                browserInfo.textContent = isWhatsApp ? 'WhatsApp Browser algılandı' : 
+                                         isMobile ? 'Mobil browser algılandı' : 'Desktop browser';
+            }
+            
+            // Force start for mobile/WhatsApp browsers with immediate execution
+            if (/WhatsApp|Mobile|iPhone|Android/i.test(navigator.userAgent)) {
+                console.log('Mobil/WhatsApp ortamı algılandı, sorular otomatik yüklenecek');
+                // Immediate execution for WhatsApp Web
+                setTimeout(() => {
+                    forceLoadQuestions();
+                }, 50); // Reduced delay for faster loading
+                return;
+            }
+            
+            // Multiple initialization attempts for other browsers
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            function tryInit() {
+                attempts++;
+                console.log('Init attempt:', attempts);
+                
+                const container = document.getElementById('question-container');
+                const loadingPlaceholder = document.getElementById('loading-placeholder');
+                
+                if (container && questions && questions.length > 0) {
+                    console.log('Container and questions found, initializing...');
+                    
+                    // Hide loading using DOM API
+                    if (loadingPlaceholder) {
+                        loadingPlaceholder.style.display = 'none';
+                    }
+                    
+                    initializeExam();
+                } else if (attempts < maxAttempts) {
+                    console.log('Retrying in 300ms...');
+                    setTimeout(tryInit, 300); // Faster retry for better UX
+                } else {
+                    console.log('Max attempts reached, showing manual load option');
+                    // Create manual load interface using DOM API
+                    if (loadingPlaceholder) {
+                        loadingPlaceholder.textContent = '';
+                        
+                        const errorContainer = document.createElement('div');
+                        errorContainer.classList.add('loading-container');
+                        
+                        const errorTitle = document.createElement('div');
+                        errorTitle.classList.add('error-message');
+                        errorTitle.textContent = '🔄 Otomatik yükleme başarısız';
+                        
+                        const errorDesc = document.createElement('p');
+                        errorDesc.classList.add('error-description');
+                        errorDesc.textContent = 'Tarayıcınızda sorun yaşanıyor. Manuel olarak başlatabilirsiniz:';
+                        
+                        const manualBtn = document.createElement('button');
+                        manualBtn.id = 'manual-start-btn';
+                        manualBtn.classList.add('manual-start-btn');
+                        manualBtn.textContent = '📚 Sınavı Başlat';
+                        
+                        const helpText = document.createElement('div');
+                        helpText.classList.add('help-text');
+                        helpText.textContent = 'Veya sayfayı yenileyin';
+                        
+                        errorContainer.appendChild(errorTitle);
+                        errorContainer.appendChild(errorDesc);
+                        errorContainer.appendChild(manualBtn);
+                        errorContainer.appendChild(helpText);
+                        
+                        loadingPlaceholder.appendChild(errorContainer);
+                        
+                        // Add event listener to the new button
+                        manualBtn.addEventListener('click', forceLoadQuestions);
+                    }
+                }
+            }
+            
+            // Start immediately for faster loading
+            tryInit();
+        }
+
+        // Enhanced page load event handlers for better compatibility
+        document.addEventListener('readystatechange', () => {
+            console.log('Ready state changed:', document.readyState);
+            if (document.readyState === 'interactive' || document.readyState === 'complete') {
+                safeInitialize();
+            }
+        });
+
+        // Immediate execution for already loaded pages
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', safeInitialize);
+        } else {
+            // Page already loaded, initialize immediately
+            console.log('Page already loaded, initializing immediately');
+            safeInitialize();
+        }
+
+        // Backup initialization with window load (especially for Safari mobile)
+        window.addEventListener('load', function() {
+            console.log('Window load event triggered');
+            setTimeout(safeInitialize, 100); // Quick backup check
+        });
+    </script>
 </body>
 </html>
