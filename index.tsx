@@ -206,9 +206,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Update Dynamic Stats ---
     const totalQuestionsEl = document.getElementById('total-questions');
     const totalWeeksEl = document.getElementById('total-weeks');
+    
+    console.log('Found questions:', allQuestions.length);
+    console.log('Total questions element:', totalQuestionsEl);
+    
     if (totalQuestionsEl) totalQuestionsEl.textContent = allQuestions.length.toString();
     if (totalWeeksEl) {
         const weekSections = document.querySelectorAll('.week-section:not(:has(#week-summary))');
+        console.log('Found week sections:', weekSections.length);
         totalWeeksEl.textContent = weekSections.length.toString();
     }
 
